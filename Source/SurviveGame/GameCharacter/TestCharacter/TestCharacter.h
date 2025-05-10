@@ -95,7 +95,8 @@ protected:
 	UInputAction* EquipmentSpecial2;
 	//CameraInput
 	FVector2D CameraInput;
-	
+
+	//MovementInput
 	FVector2D MovementInput;
 	
 	//WeightAffectedMovement
