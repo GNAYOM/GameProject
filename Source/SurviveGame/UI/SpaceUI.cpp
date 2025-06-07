@@ -17,7 +17,7 @@ ASpaceUI::ASpaceUI()
 
 float ASpaceUI::RightAngleYawRotate(float YawRotation, float AbsAllowableRange)
 {
-	float tmp_ResultYawRotation;
+	float tmp_ResultYawRotation = 0;
 	if (0 <= abs(YawRotation) && abs(YawRotation) < 45)
 	{
 		tmp_ResultYawRotation = 0;
@@ -49,7 +49,7 @@ void ASpaceUI::BeginPlay()
 {
 	Super::BeginPlay();
 	TArray<AActor*> MainCharacterFound;
-	MainCharacter = Cast<ATestCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0));
+	MainCharacter = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0));
 	/*for (AActor* FoundActor : MainCharacterFound )
 	{
 		MainCharacter = Cast<ATestCharacter>(FoundActor);

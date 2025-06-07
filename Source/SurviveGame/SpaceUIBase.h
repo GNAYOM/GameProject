@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "SurviveGame/GameCharacter/TestCharacter/TestCharacter.h"
+#include "SurviveGame/GameCharacter/BaseCharacter/BaseCharacter.h"
 #include "SpaceUIBase.generated.h"
 
 
@@ -22,7 +22,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FVector MainCameraWorldLocation();
 	UPROPERTY()
-	ATestCharacter* MainCharacter;
+	ABaseCharacter* MainCharacter;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

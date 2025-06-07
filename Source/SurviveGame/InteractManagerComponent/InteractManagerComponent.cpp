@@ -66,12 +66,21 @@ void UInteractManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	for(int i =0;AInteractObject* IO : tmp_InteractObjectsSorted)
 	{
 		
-		FString IOName = IO -> InteractObjectName;
+		FString IOName = IO -> InteractObjectNameStatus;
 		//UE_LOG(LogTemp,Warning,TEXT("%d  %s"),i,*IOName);
 		i++;
 	}
 	InteractObjectsSorted = tmp_InteractObjectsSorted;
 	// ...
+}
+
+void UInteractManagerComponent::InteractObjectOptionSelected(int OptionSlotNum)
+{
+	
+	if(!InteractObjectsSorted.IsEmpty())
+	{
+		InteractObjectsSorted[0]->ReleaseEventActively(OptionSlotNum);
+	}
 }
 
 void UInteractManagerComponent::OnInteractObjectBeginOverlap(UPrimitiveComponent* OverlappedComponent,
@@ -82,6 +91,7 @@ void UInteractManagerComponent::OnInteractObjectBeginOverlap(UPrimitiveComponent
 	UE_LOG(LogTemp, Warning, TEXT("BeginOverlap:%s"), *IOName);
 	AInteractObject* InsertNewInteractObject =  Cast<AInteractObject>(OtherActor);
 	InRangeInteractObjects.Add(InsertNewInteractObject);
+	//InsertNewInteractObject->ReleaseEventActive(1);
 }
 
 void UInteractManagerComponent::OnInteractObjectEndOverlapEnd(UPrimitiveComponent* OverlappedComponent,

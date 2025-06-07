@@ -21,7 +21,7 @@ FVector USpaceUIBase::MainCameraWorldLocation()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(),AInteractObject::StaticClass(),MainCharacterFound);
 	for (AActor* FoundActor : MainCharacterFound )
 	{
-		MainCharacter = Cast<ATestCharacter>(FoundActor);
+		MainCharacter = Cast<ABaseCharacter>(FoundActor);
 		if (MainCharacter)
 		{
 			break;

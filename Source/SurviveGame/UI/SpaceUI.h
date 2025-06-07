@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "SurviveGame/GameCharacter/TestCharacter/TestCharacter.h"
+#include "SurviveGame/GameCharacter/BaseCharacter/BaseCharacter.h"
 #include "SpaceUI.generated.h"
 
 UCLASS()
@@ -21,7 +21,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FVector MainCameraWorldLocation();
 	UPROPERTY()
-	ATestCharacter* MainCharacter;
+	ABaseCharacter* MainCharacter;
 	//RotationToFrontCaculate
 	UFUNCTION(BlueprintCallable)
 	float RightAngleYawRotate(float YawRotation,float AbsAllowableRange );

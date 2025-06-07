@@ -1,17 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TestCharacter.h"
+#include "BaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/GameModeBase.h"
 #include "Windows/AllowWindowsPlatformTypes.h"
 #include "SurviveGame/DataStructure/TestCharacterStructure/WeightAffectedMovement/FTableRowWeightAffectedMovement.h"
+#include "SurviveGame/GameState/MainGameState.h"
 
 // Sets default values
-ATestCharacter::ATestCharacter()
+ABaseCharacter::ABaseCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
+	
 	CamSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraComponent"));
 	MainCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("MainCamera"));
 	CameraTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("Camera Trigger"));
@@ -20,59 +23,89 @@ ATestCharacter::ATestCharacter()
 	CamSpringArm->bEnableCameraLag = true;
 	MainCamera->SetupAttachment(CamSpringArm,USpringArmComponent::SocketName);
 	CameraTrigger->SetupAttachment(MainCamera);
+	
 	CharacterInputMapping = CreateDefaultSubobject<UInputMappingContext>(TEXT("InputMapping"));
 	InteractObjectDetector = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractObjectDetector"));
 	InteractObjectDetector -> SetupAttachment(GetMesh());
 	InteractManagerComponent = CreateDefaultSubobject<UInteractManagerComponent>(TEXT("InteractManager"));
 	InteractManagerComponent -> SetupAttachment(RootComponent);
+	
 }
-//MovementControl
-void ATestCharacter::MoveForward(const FInputActionValue& val)
+//MovementControl callback
+void ABaseCharacter::MoveForward(const FInputActionValue& val)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("TestCharacter::MoveForward"))
 	MovementInput.X += 1.f;
 }
 
-void ATestCharacter::MoveBackward(const FInputActionValue& val)
+void ABaseCharacter::MoveBackward(const FInputActionValue& val)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("TestCharacter::MoveBackward"));
 	MovementInput.X -= 1.f;
 }
 
-void ATestCharacter::MoveLeft(const FInputActionValue& val)
+void ABaseCharacter::MoveLeft(const FInputActionValue& val)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("TestCharacter::MoveLeft"));
 	MovementInput.Y -= 1.f;
 }
 
-void ATestCharacter::MoveRight(const FInputActionValue& val)
+void ABaseCharacter::MoveRight(const FInputActionValue& val)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("TestCharacter::MoveRight"));
 	MovementInput.Y += 1.f;
 }
 
-// Called when the game starts or when spawned
-void ATestCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	WeightAffectedMovementDataTable = LoadObject<UDataTable>(this
-		,TEXT("/Script/Engine.DataTable'/Game/GameContent/DataTable/TestCharacter/WeightSystem/WeightAffectedMovementDataTable.WeightAffectedMovementDataTable'"));
-	WeightChange();
-}
-//CameraControl
-void ATestCharacter::CameraYawRotate(const FInputActionValue& val)
+//CameraControl callback
+void ABaseCharacter::CameraYawRotate(const FInputActionValue& val)
 {
 	//UE_LOG(LogTemp,Warning, TEXT("YawInput%f"),val.Get<float>());
 	CameraInput.X = val.Get<float>();
 }
 
-void ATestCharacter::CameraPitchRotate(const FInputActionValue& val)
+void ABaseCharacter::CameraPitchRotate(const FInputActionValue& val)
 {
 	//UE_LOG(LogTemp,Warning, TEXT("PitchInput%f"),val.Get<float>());
 	CameraInput.Y = val.Get<float>();
 }
+
+//OptionSelected callback
+void ABaseCharacter::Option1Selected()
+{
+	UE_LOG(LogTemp,Warning,TEXT("Option1Selected"));
+	InteractManagerComponent->InteractObjectOptionSelected(1);
+}
+
+void ABaseCharacter::Option2Selected()
+{
+	UE_LOG(LogTemp,Warning,TEXT("Option2Selected"));
+	InteractManagerComponent->InteractObjectOptionSelected(2);
+}
+
+void ABaseCharacter::Option3Selected()
+{
+	UE_LOG(LogTemp,Warning,TEXT("Option3Selected"));
+	InteractManagerComponent->InteractObjectOptionSelected(3);
+}
+
+void ABaseCharacter::Option4Selected()
+{
+	UE_LOG(LogTemp,Warning,TEXT("Option4Selected"));
+	InteractManagerComponent->InteractObjectOptionSelected(4);
+}
+
+// Called when the game starts or when spawned
+void ABaseCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	MainGameState = GetWorld()->GetAuthGameMode()->GetGameState<AMainGameState>();
+	WeightAffectedMovementDataTable = LoadObject<UDataTable>(this
+		,TEXT("/Script/Engine.DataTable'/Game/GameContent/DataTable/TestCharacter/WeightSystem/WeightAffectedMovementDataTable.WeightAffectedMovementDataTable'"));
+	WeightChange();
+}
+
 // Called every frame
-void ATestCharacter::Tick(float DeltaTime)
+void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	//相机控制
@@ -81,9 +114,6 @@ void ATestCharacter::Tick(float DeltaTime)
 		CamDeltaRotator.Pitch = FMath::Clamp(CamDeltaRotator.Pitch + CameraInput.Y,-80.0f,80.0f);
 		CamDeltaRotator.Yaw += CameraInput.X;
 		CamSpringArm->SetWorldRotation(CamDeltaRotator);
-		float X = CameraInput.X;
-		float Y = CameraInput.Y;
-		UE_LOG(LogTemp,Warning,TEXT("InputX%f InputY%f"),X,Y);
 		CameraInput.Y = 0.f;
 		CameraInput.X = 0.f;
 	}//cam delta pitch rotator
@@ -126,7 +156,7 @@ void ATestCharacter::Tick(float DeltaTime)
 
 
 // Called to bind functionality to input
-void ATestCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	
@@ -147,43 +177,68 @@ void ATestCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		if(Forward)
 		{
 			EnhancedInputComponent -> BindAction(Forward,ETriggerEvent::Triggered,this
-				,&ATestCharacter::MoveForward);
+				,&ABaseCharacter::MoveForward);
 		}
 		if(Backward)
 		{
 			EnhancedInputComponent -> BindAction(Backward,ETriggerEvent::Triggered,this
-				,&ATestCharacter::MoveBackward);
+				,&ABaseCharacter::MoveBackward);
 		}
 		if(Right)
 		{
 			EnhancedInputComponent -> BindAction(Right,ETriggerEvent::Triggered,this
-				,&ATestCharacter::MoveRight);
+				,&ABaseCharacter::MoveRight);
 		}
 		if(Left)
 		{
 			EnhancedInputComponent -> BindAction(Left,ETriggerEvent::Triggered,this
-				,&ATestCharacter::MoveLeft);
+				,&ABaseCharacter::MoveLeft);
 		}
 		if(CameraYaw)
 		{
 			EnhancedInputComponent -> BindAction(CameraYaw,ETriggerEvent::Triggered,this
-				,&ATestCharacter::CameraYawRotate);
+				,&ABaseCharacter::CameraYawRotate);
 		}
 		if(CameraPitch)
 		{
 			EnhancedInputComponent -> BindAction(CameraPitch,ETriggerEvent::Triggered,this
-				,&ATestCharacter::CameraPitchRotate);
+				,&ABaseCharacter::CameraPitchRotate);
+		}
+		if (Option1)
+		{
+			EnhancedInputComponent -> BindAction(Option1,ETriggerEvent::Triggered,this
+				,&ABaseCharacter::Option1Selected);
+		}
+		if (Option2)
+		{
+			EnhancedInputComponent -> BindAction(Option2,ETriggerEvent::Triggered,this
+				,&ABaseCharacter::Option2Selected);
+		}
+		if (Option3)
+		{
+			EnhancedInputComponent -> BindAction(Option3,ETriggerEvent::Triggered,this
+				,&ABaseCharacter::Option3Selected);
+			
+		}
+		if (Option4)
+		{
+			EnhancedInputComponent -> BindAction(Option4,ETriggerEvent::Triggered,this
+				,&ABaseCharacter::Option4Selected);
 		}
 	}
 }
 
-void ATestCharacter::WeightChange()
+void ABaseCharacter::WeightChange()
 {
+	float g = GetWorld()->GetAuthGameMode()->GetGameState<AMainGameState>()->WeightLoad;
+	UE_LOG(LogTemp,Warning,TEXT("weight %d"),g);
 	if (WeightAffectedMovementDataTable)
 	{
 		//for (FName RowName : WeightAffectedMovementDataTable->GetRowNames())
 		//{
 			//UE_LOG(LogTemp, Warning, TEXT("RowName: %s"), *RowName.ToString());
+
+			
 			FTableRowWeightAffectedMovement* WeightAffectedMovementData =
 				WeightAffectedMovementDataTable->FindRow<FTableRowWeightAffectedMovement>(FName(WeightStatus),TEXT(""));
 			if(WeightAffectedMovementData)

@@ -12,23 +12,28 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "SurviveGame/InteractManagerComponent/InteractManagerComponent.h"
-#include "TestCharacter.generated.h"
+#include "SurviveGame/GameState/MainGameState.h"
+#include "BaseCharacter.generated.h"
 
 UCLASS()
-class SURVIVEGAME_API ATestCharacter : public ACharacter
+class SURVIVEGAME_API ABaseCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	ATestCharacter();
+	ABaseCharacter();
 
 	//MovementControl callback
 	void MoveForward(const FInputActionValue& val);
 	void MoveBackward(const FInputActionValue& val);
 	void MoveLeft(const FInputActionValue& val);
 	void MoveRight(const FInputActionValue& val);
-	
+	//InteractOption callback
+	void Option1Selected();
+	void Option2Selected();
+	void Option3Selected();
+	void Option4Selected();
 	//CameraControl callback
 	void CameraYawRotate(const FInputActionValue& val);
 	void CameraPitchRotate(const FInputActionValue& val);
@@ -44,6 +49,7 @@ protected:
 	UInteractManagerComponent* InteractManagerComponent;
 	UPROPERTY(EditAnywhere,Category="InteractManager")
 	UBoxComponent* InteractObjectDetector;
+	
 	//CameraAction
 	UPROPERTY(EditAnywhere,Category="Action")
 	UInputAction* CameraYaw;
@@ -76,7 +82,7 @@ protected:
 	UInputAction* Option4;
 	//EquipmentRelated
 	UPROPERTY(EditAnywhere,Category="Action")
-	UInputAction* EquipGunEquipment;
+	UInputAction* EquipProjectileEquipment;
 	UPROPERTY(EditAnywhere,Category="Action")
 	UInputAction* EquipWearEquipment;
 	UPROPERTY(EditAnywhere,Category="Action")
@@ -86,7 +92,7 @@ protected:
 	UPROPERTY(EditAnywhere,Category="Action")
 	UInputAction* SwitchEquipmentNext;
 	UPROPERTY(EditAnywhere,Category="Action")
-	UInputAction* AimPosition;
+	UInputAction* AimEquipment;
 	UPROPERTY(EditAnywhere,Category="Action")
 	UInputAction* UseEquipment;
 	UPROPERTY(EditAnywhere,Category="Action")
@@ -111,8 +117,8 @@ protected:
 	UPROPERTY(EditAnywhere,Category="WeightAffectedMovement")
 	float MaxAcceleration;
 
-	//Status
-	float WeightLoad;
+	//GameState
+	AMainGameState* MainGameState;
 	
 public:
 	//CameraComponents
