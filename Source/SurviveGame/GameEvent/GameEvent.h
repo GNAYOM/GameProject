@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "SurviveGame/InteractObject/InteractObjectInterface.h"
+#include "stack"
 #include "GameEvent.generated.h"
 
+using namespace std;
 
 UCLASS()
 class SURVIVEGAME_API AGameEvent : public AActor
@@ -65,12 +67,16 @@ public:
 		void Test00001();//EventID 00001
 		void Test00002();//EventID 00002
 		void Test00003();//EventID 00003
-	//02 ScriptExplaner
-		void ScriptExplaner(FString Path);//EventID 200000000
+	//02 ScriptExecutor
+		void ScriptExecutor();//EventID 200000000
+		void ScriptCompiler(FString Path);
+		TArray<FString>	ScriptInstructions;
+		TArray<TArray<FString>> ScriptInstructionParams;
 		FString ScriptPath;
-		int ScriptExplanerPC;
+		int ScriptExecutorPC=0;
+		int ScriptExecutorIR;
 	//03 InteractorObjectStatusChange
-		void InteractObjectStatusChange();	
+		void InteractObjectStatusChange(FString NewStatus);	
 	//04 SubEventRelease
 		void ReleaseSubEvent(int SubEventID,AGameEvent* FatherObject);
 	// AffectCharacter

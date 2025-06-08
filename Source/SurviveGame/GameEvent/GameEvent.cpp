@@ -42,10 +42,10 @@ void AGameEvent::Tick(float DeltaTime)
 	}
 }
 
-void AGameEvent::InteractObjectStatusChange()
+void AGameEvent::InteractObjectStatusChange(FString NewStatus)//只有最外层事件可以调用
 {
 	AInteractObjectInterface* tmp_IO = Cast<AInteractObjectInterface>(MotherObject);
-	tmp_IO->UpdateInteractObjectStatus("Test1");
+	tmp_IO->UpdateInteractObjectStatus(NewStatus);
 }
 
 void AGameEvent::ReleaseSubEvent(int SubEventID,AGameEvent* FatherObject)
@@ -67,7 +67,7 @@ void AGameEvent::MainEventSelector(int ID)
 		break;
 	case 100100003 : CurrentEvent_0_Param = &AGameEvent::Test00003;
 		break;
-	case 200000000: CurrentEvent_1_StringParam = &AGameEvent::ScriptExplaner;
+	case 200000000: CurrentEvent_0_Param = &AGameEvent::ScriptExecutor;
 		break;
 	}
 	UE_LOG(LogTemp,Warning,TEXT("%d"),ID);
@@ -123,14 +123,98 @@ void AGameEvent::Test00003()
 
 }
 
-
-
-void AGameEvent::ScriptExplaner(FString Path)
+void AGameEvent::ScriptExecutor()
 {
+	
 	if(!EventFlag0)
 	{
-		ReleaseSubEvent(100100002,this);
+		ScriptCompiler("S");
+		/*ReleaseSubEvent(100100002,this);
+		InteractObjectStatusChange("Test1");*/
 		EventFlag0 = true;
 	}
+	if(ScriptExecutorPC == ScriptInstructions.Num())
+	{Destroy();}
+	else
+	{
+		if(ScriptInstructions[ScriptExecutorPC].Equals("IOStatusChange"))
+		{
+				//ReleaseSubEvent(100100002,this);
+				UE_LOG(LogTemp,Warning,TEXT("FatherIOStatus Test1"));
+				InteractObjectStatusChange(ScriptInstructionParams[ScriptExecutorPC][0]);
+				ScriptExecutorPC++;
+				
+		}
+	}
+}
+
+
+void AGameEvent::ScriptCompiler(FString Path)
+{
+	stack<char> OperatorStack;
+	FString TestScript = "#IOStatusChange(Test1)";
+	FString Tmp_Instruction;
+	FString Tmp_InstructionParam;
+	TArray<FString> Tmp_InstructionParams;
+	for(char I : TestScript)
+	{
+		
+		if(I == '#' || I == '(' ||I == ')')
+		{
+			OperatorStack.push(I);
+		}//PushOperator
+		if(OperatorStack.empty())
+		{
+			continue;
+		}//若栈为空直接跳过
+		if (I == '#')
+		{
+			continue;
+		}//表示开始进行指令检测
+		if(OperatorStack.top() == '#')
+		{
+			Tmp_Instruction.AppendChar(I);
+		}
+		if (I == '(')
+		{
+			ScriptInstructions.Add(Tmp_Instruction);
+			UE_LOG(LogTemp,Warning,TEXT("Instruction:%s"),*Tmp_Instruction);
+			Tmp_Instruction.Empty();
+			continue;
+		}//指令检测完毕
+		if (OperatorStack.top() == '(')
+		{
+			if(I == ',')
+			{
+				Tmp_InstructionParams.Add(Tmp_InstructionParam);
+				UE_LOG(LogTemp,Warning,TEXT("InstructionParam:%s"),*Tmp_InstructionParam);
+				Tmp_InstructionParam.Empty();
+				continue;
+			}//若遇到 ',' 直接将检测参数Add入临时Params
+			Tmp_InstructionParam.AppendChar(I);
+		}
+		if(OperatorStack.top() == ')')
+		{
+			if(Tmp_InstructionParams.IsEmpty() && Tmp_InstructionParam.IsEmpty())
+			{
+				Tmp_InstructionParam = "NULL";
+				Tmp_InstructionParams.Add(Tmp_InstructionParam);
+				UE_LOG(LogTemp,Warning,TEXT("InstructionParam:%s"),*Tmp_InstructionParam);
+				Tmp_InstructionParam.Empty();
+			}//若无参数也需使得ScriptInstructionParams添加NULL,便于与ScriptInstruction一一对应
+			Tmp_InstructionParams.Add(Tmp_InstructionParam);
+			UE_LOG(LogTemp,Warning,TEXT("InstructionParam:%s"),*Tmp_InstructionParam);
+			Tmp_InstructionParam.Empty();
+			ScriptInstructionParams.Add(Tmp_InstructionParams);
+			Tmp_InstructionParams.Empty();//将最后一组参数加入ScriptInstructionParams
+			while (!OperatorStack.empty())
+			{
+				OperatorStack.pop();
+			}//弹出所有操作符
+			UE_LOG(LogTemp,Warning,TEXT("OperatorStack empty"));
+			UE_LOG(LogTemp,Warning,TEXT("Compile complete"));
+		}
+	}
+
 }
 
