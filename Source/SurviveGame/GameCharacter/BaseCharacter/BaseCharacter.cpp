@@ -29,7 +29,7 @@ ABaseCharacter::ABaseCharacter()
 	InteractObjectDetector -> SetupAttachment(GetMesh());
 	InteractManagerComponent = CreateDefaultSubobject<UInteractManagerComponent>(TEXT("InteractManager"));
 	InteractManagerComponent -> SetupAttachment(RootComponent);
-	
+
 }
 //MovementControl callback
 void ABaseCharacter::MoveForward(const FInputActionValue& val)

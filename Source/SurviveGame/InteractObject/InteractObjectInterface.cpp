@@ -32,14 +32,14 @@ void AInteractObjectInterface::SetupPlayerInputComponent(UInputComponent* Player
 }
 
 
-void AInteractObjectInterface::UpdateInteractObjectStatus(FString NewInteractObjectNameStatus)
+void AInteractObjectInterface::UpdateInteractObjectStatus(FString NewInteractObjectStatus)
 {
 	if(InteractObjectDataTable)
 	{
 		//for(FName RowName : InteractObjectDataTable -> GetRowNames())
 		//{
 		//UE_LOG(LogTemp, Warning, TEXT("RowName: %s"), *RowName.ToString());
-		this->InteractObjectNameStatus = NewInteractObjectNameStatus;
+		this->InteractObjectNameStatus = NewInteractObjectStatus;
 		FTableRowInteractObject* InteractObjectData =
 			InteractObjectDataTable->FindRow<FTableRowInteractObject>(FName(InteractObjectNameStatus),TEXT(""));
 		if(InteractObjectData)
@@ -56,5 +56,10 @@ void AInteractObjectInterface::UpdateInteractObjectStatus(FString NewInteractObj
 
 		//}
 	}
+}
+
+void AInteractObjectInterface::UpdateInteractObjectScript(FString NewInteractObjectScript)
+{
+	1;
 }
 

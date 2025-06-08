@@ -25,6 +25,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	FString InteractObjectNameStatus;
 	UPROPERTY(EditAnywhere)
+	FString Script;
+	UPROPERTY(EditAnywhere)
 	UDataTable* InteractObjectDataTable;
 	//InteractOption
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
@@ -45,5 +47,6 @@ public:
 	int EventID4;
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual void UpdateInteractObjectStatus(FString NewInteractObjectNameStatus);
+	virtual void UpdateInteractObjectStatus(FString NewInteractObjectStatus);
+	virtual void UpdateInteractObjectScript(FString NewInteractObjectScript);
 };

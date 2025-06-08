@@ -14,6 +14,7 @@ class SURVIVEGAME_API AGameEvent : public AActor
 	GENERATED_BODY()
 	void (AGameEvent::*CurrentEvent_0_Param)();
 	void (AGameEvent::*CurrentEvent_1_IntParam)(int);
+	void (AGameEvent::*CurrentEvent_1_StringParam)(FString);
 public:	
 	// Sets default values for this actor's properties
 	AGameEvent();
@@ -26,7 +27,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	void ReleaseSubEvent(int SubEventID);
+
 	//Targets
 	UPROPERTY()
 	AActor *MotherObject;
@@ -42,22 +43,36 @@ public:
 	bool EventFlag8 = false;
 	bool EventFlag9 = false;
 	//EventParam
-	int EventParam0 = 0;
-	int EventParam1 = 0;
-	int EventParam2 = 0;
-	int EventParam3 = 0;
-	int EventParam4 = 0;
+	int IntEventParam0 = 0;
+	int IntEventParam1 = 0;
+	int IntEventParam2 = 0;
+	int IntEventParam3 = 0;
+	int IntEventParam4 = 0;
+	
+	FString StringEventParam0 = "";
+	FString StringEventParam1 = "";
+	FString StringEventParam2 = "";
+	FString StringEventParam3 = "";
+	FString StringEventParam4 = "";
 	//EventID
 	UPROPERTY(EditAnywhere)
 	int EventID  = 0;
+	//EventSelector
+	void MainEventSelector(int ID);
 	//Events
 	//01 Test
 		//IOID 0001
-		void ActivlyEvent0100100001();//EventID 00001
-		void ActivlyEvent0100100002();//EventID 00001
-		void ActivlyEvent0100100003();
-	
-	//02 AffectInteractObj
-	//03 AffectCharacter
-	//04 AffectFields
+		void Test00001();//EventID 00001
+		void Test00002();//EventID 00002
+		void Test00003();//EventID 00003
+	//02 ScriptExplaner
+		void ScriptExplaner(FString Path);//EventID 200000000
+		FString ScriptPath;
+		int ScriptExplanerPC;
+	//03 InteractorObjectStatusChange
+		void InteractObjectStatusChange();	
+	//04 SubEventRelease
+		void ReleaseSubEvent(int SubEventID,AGameEvent* FatherObject);
+	// AffectCharacter
+	// AffectFields
 };

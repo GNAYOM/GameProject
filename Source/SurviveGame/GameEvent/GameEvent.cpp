@@ -20,18 +20,7 @@ AGameEvent::AGameEvent()
 void AGameEvent::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	switch (EventID)
-	{
-	case 100100001 : CurrentEvent_0_Param = &AGameEvent::ActivlyEvent0100100001;
-		break;
-	case 100100002 : CurrentEvent_0_Param = &AGameEvent::ActivlyEvent0100100002;
-		break;
-	case 100100003 : CurrentEvent_0_Param = &AGameEvent::ActivlyEvent0100100003;
-		break;
-	}
-	UE_LOG(LogTemp,Warning,TEXT("%d"),EventID);
-
+	MainEventSelector(EventID);
 }
 
 // Called every frame
@@ -43,13 +32,23 @@ void AGameEvent::Tick(float DeltaTime)
 	{
 		(this->*CurrentEvent_0_Param)();
 	}
-	if (CurrentEvent_1_IntParam != nullptr)
+	else if (CurrentEvent_1_IntParam != nullptr)
 	{
-		(this->*CurrentEvent_1_IntParam)(EventParam1);
+		(this->*CurrentEvent_1_IntParam)(IntEventParam0);
+	}
+	else if (CurrentEvent_1_StringParam != nullptr)
+	{
+		(this->*CurrentEvent_1_StringParam)(StringEventParam0);
 	}
 }
 
-void AGameEvent::ReleaseSubEvent(int SubEventID)
+void AGameEvent::InteractObjectStatusChange()
+{
+	AInteractObjectInterface* tmp_IO = Cast<AInteractObjectInterface>(MotherObject);
+	tmp_IO->UpdateInteractObjectStatus("Test1");
+}
+
+void AGameEvent::ReleaseSubEvent(int SubEventID,AGameEvent* FatherObject)
 {
 	AGameEvent* tmp_NewGameEvent =Cast<AGameEvent>(UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), AGameEvent::StaticClass(), FTransform::Identity,ESpawnActorCollisionHandlingMethod::Undefined,this)); 
 	tmp_NewGameEvent->EventID = SubEventID;
@@ -58,50 +57,80 @@ void AGameEvent::ReleaseSubEvent(int SubEventID)
 	tmp_NewGameEvent->AttachToActor(this,FAttachmentTransformRules::KeepWorldTransform);
 }
 
-void AGameEvent::ActivlyEvent0100100001()
+void AGameEvent::MainEventSelector(int ID)
 {
-	UE_LOG(LogTemp,Warning,TEXT("Event %d released activly"),EventID);
-	UE_LOG(LogTemp,Warning,TEXT("Event %d: Event Begin"),EventID);
+	switch (ID)
+	{
+	case 100100001 : CurrentEvent_0_Param = &AGameEvent::Test00001;
+		break;
+	case 100100002 : CurrentEvent_0_Param = &AGameEvent::Test00002;
+		break;
+	case 100100003 : CurrentEvent_0_Param = &AGameEvent::Test00003;
+		break;
+	case 200000000: CurrentEvent_1_StringParam = &AGameEvent::ScriptExplaner;
+		break;
+	}
+	UE_LOG(LogTemp,Warning,TEXT("%d"),ID);
+}
+
+void AGameEvent::Test00001()
+{
+
 	//UE_LOG(LogTemp,Warning,TEXT("Event %d: flag 1000001 set true"),EventID);
 	//UE_LOG(LogTemp,Warning,TEXT("Event %d: AND01 true"),EventID);
 	//UE_LOG(LogTemp,Warning,TEXT("Event %d: Event End"),EventID);
-	AInteractObjectInterface* tmp_IO = Cast<AInteractObjectInterface>(MotherObject);
+	//AInteractObjectInterface* tmp_IO = Cast<AInteractObjectInterface>(MotherObject);
 	//tmp_IO->UpdateInteractObjectStatus("Test1");
 	if(!EventFlag0)
 	{
-		ReleaseSubEvent(100100002);
+		ReleaseSubEvent(100100002,this);
 		EventFlag0 = true;
 	}
 	if (EventFlag1)
 	{
+		UE_LOG(LogTemp,Warning,TEXT("Event %d: Event Destroyed"),EventID);
 		Destroy();
+		
 	}
 
 }
 
-void AGameEvent::ActivlyEvent0100100002()
+void AGameEvent::Test00002()
 {
-	UE_LOG(LogTemp,Warning,TEXT("Event %d released activly"),EventID);
-	UE_LOG(LogTemp,Warning,TEXT("Event %d: Event Begin"),EventID);
+	
 	if(!EventFlag0)
 	{
-		ReleaseSubEvent(100100003);
+		ReleaseSubEvent(100100003,this);
 		EventFlag0 = true;
 	}
 	if(EventFlag1)
 	{
 		Cast<AGameEvent>(MotherObject)->EventFlag1 = true;
+		UE_LOG(LogTemp,Warning,TEXT("Event 0100100001: EventFlag1 toggle"));
+		UE_LOG(LogTemp,Warning,TEXT("Event %d: Event Destroyed"),EventID);
 		Destroy();
 	}
 	//Tags.Add(FName(TEXT("%d"),EventID));
 
 }
-void AGameEvent::ActivlyEvent0100100003()
+void AGameEvent::Test00003()
 {
-	UE_LOG(LogTemp,Warning,TEXT("Event %d released activly"),EventID);
-	UE_LOG(LogTemp,Warning,TEXT("Event %d: Event Begin"),EventID);
+	UE_LOG(LogTemp,Warning,TEXT("Event 0100100002: EventFlag1 toggle"));
 	Cast<AGameEvent>(MotherObject)->EventFlag1 = true;
+	UE_LOG(LogTemp,Warning,TEXT("Event %d: Event Destroyed"),EventID);
 	Destroy();
 	//Tags.Add(FName(TEXT("%d"),EventID));
 
 }
+
+
+
+void AGameEvent::ScriptExplaner(FString Path)
+{
+	if(!EventFlag0)
+	{
+		ReleaseSubEvent(100100002,this);
+		EventFlag0 = true;
+	}
+}
+

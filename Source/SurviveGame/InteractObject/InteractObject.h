@@ -42,7 +42,7 @@ public:
 	//EventRelease
 	void ReleaseEventActively(int OptionSlotNum);
 	//InteractObjectStatusChanged
-	void UpdateInteractObjectStatus(FString NewInteractObjectNameStatus) override;
+	void UpdateInteractObjectStatus(FString NewInteractObjectStatus) override;
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
