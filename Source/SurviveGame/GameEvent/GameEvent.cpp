@@ -42,10 +42,9 @@ void AGameEvent::Tick(float DeltaTime)
 	}
 }
 
-void AGameEvent::InteractObjectStatusChange(FString NewStatus)//只有最外层事件可以调用
+void AGameEvent::ItemStatusChange(FString NewStatus)//只有最外层事件可以调用
 {
-	AInteractObjectInterface* tmp_IO = Cast<AInteractObjectInterface>(MotherObject);
-	tmp_IO->UpdateInteractObjectStatus(NewStatus);
+	MotherIOInterface->UpdateItemStatus(NewStatus);
 }
 
 void AGameEvent::ReleaseSubEvent(int SubEventID,AGameEvent* FatherObject)
@@ -55,6 +54,34 @@ void AGameEvent::ReleaseSubEvent(int SubEventID,AGameEvent* FatherObject)
 	tmp_NewGameEvent->MotherObject = this;
 	UGameplayStatics::FinishSpawningActor(tmp_NewGameEvent,FTransform::Identity);
 	tmp_NewGameEvent->AttachToActor(this,FAttachmentTransformRules::KeepWorldTransform);
+}
+
+void AGameEvent::Option1Detection()
+{
+	UE_LOG(LogTemp,Warning,TEXT("OP1PRESSED"));
+	MotherIOInterface->Option1JustPressed = true;
+	Destroy();
+}
+
+void AGameEvent::Option2Detection()
+{
+	UE_LOG(LogTemp,Warning,TEXT("OP2PRESSED"));
+	MotherIOInterface->Option2JustPressed = true;
+	Destroy();
+}
+
+void AGameEvent::Option3Detection()
+{
+	UE_LOG(LogTemp,Warning,TEXT("OP3PRESSED"));
+	MotherIOInterface->Option3JustPressed = true;
+	Destroy();
+}
+
+void AGameEvent::Option4Detection()
+{
+	UE_LOG(LogTemp,Warning,TEXT("OP4PRESSED"));
+	MotherIOInterface->Option4JustPressed = true;
+	Destroy();
 }
 
 void AGameEvent::MainEventSelector(int ID)
@@ -68,6 +95,14 @@ void AGameEvent::MainEventSelector(int ID)
 	case 100100003 : CurrentEvent_0_Param = &AGameEvent::Test00003;
 		break;
 	case 200000000: CurrentEvent_0_Param = &AGameEvent::ScriptExecutor;
+		break;
+	case 500000001 :CurrentEvent_0_Param = &AGameEvent::Option1Detection;
+		break;
+	case 500000002 :CurrentEvent_0_Param = &AGameEvent::Option2Detection;
+		break;
+	case 500000003 :CurrentEvent_0_Param = &AGameEvent::Option3Detection;
+		break;
+	case 500000004 :CurrentEvent_0_Param = &AGameEvent::Option4Detection;
 		break;
 	}
 	UE_LOG(LogTemp,Warning,TEXT("%d"),ID);
@@ -137,13 +172,17 @@ void AGameEvent::ScriptExecutor()
 	{Destroy();}
 	else
 	{
-		if(ScriptInstructions[ScriptExecutorPC].Equals("IOStatusChange"))
+		if(ScriptInstructions[ScriptExecutorPC].Equals("ItemStatusChange"))
 		{
 				//ReleaseSubEvent(100100002,this);
-				UE_LOG(LogTemp,Warning,TEXT("FatherIOStatus Test1"));
-				InteractObjectStatusChange(ScriptInstructionParams[ScriptExecutorPC][0]);
+				ItemStatusChange(ScriptInstructionParams[ScriptExecutorPC][0]);
 				ScriptExecutorPC++;
-				
+		}
+		if(ScriptInstructions[ScriptExecutorPC].Equals("DestroyWhenInputOption1"))
+		{
+			UE_LOG(LogTemp,Warning,TEXT("waitkey"));
+			if(MotherIOInterface->Option1JustPressed)
+			{Destroy();}
 		}
 	}
 }
@@ -152,7 +191,7 @@ void AGameEvent::ScriptExecutor()
 void AGameEvent::ScriptCompiler(FString Path)
 {
 	stack<char> OperatorStack;
-	FString TestScript = "#IOStatusChange(Test1)";
+	FString TestScript = Cast<AInteractObjectInterface>(MotherObject)->Script;
 	FString Tmp_Instruction;
 	FString Tmp_InstructionParam;
 	TArray<FString> Tmp_InstructionParams;

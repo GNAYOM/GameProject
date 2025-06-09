@@ -2,7 +2,8 @@
 
 
 #include "InteractObjectInterface.h"
-#include "SurviveGame/DataStructure/InteractObjectStructure/FTableRowInteractObject.h"
+#include "SurviveGame/DataStructure/InteractObjectStructure/ItemStructure/FTableRowItem.h"
+#include "SurviveGame/DataStructure/InteractObjectStructure/ScriptStructure/FTableRowScript.h"
 // Sets default values
 AInteractObjectInterface::AInteractObjectInterface()
 {
@@ -32,16 +33,16 @@ void AInteractObjectInterface::SetupPlayerInputComponent(UInputComponent* Player
 }
 
 
-void AInteractObjectInterface::UpdateInteractObjectStatus(FString NewInteractObjectStatus)
+void AInteractObjectInterface::UpdateItemStatus(FString NewItemStatus)
 {
-	if(InteractObjectDataTable)
+	if(ItemDataTable)
 	{
 		//for(FName RowName : InteractObjectDataTable -> GetRowNames())
 		//{
 		//UE_LOG(LogTemp, Warning, TEXT("RowName: %s"), *RowName.ToString());
-		this->InteractObjectNameStatus = NewInteractObjectStatus;
-		FTableRowInteractObject* InteractObjectData =
-			InteractObjectDataTable->FindRow<FTableRowInteractObject>(FName(InteractObjectNameStatus),TEXT(""));
+		this->ItemStatus = NewItemStatus;
+		FTableRowItem* InteractObjectData =
+			ItemDataTable->FindRow<FTableRowItem>(FName(ItemStatus),TEXT(""));
 		if(InteractObjectData)
 		{
 			Option1 = InteractObjectData->Option1;
@@ -53,13 +54,33 @@ void AInteractObjectInterface::UpdateInteractObjectStatus(FString NewInteractObj
 			Option4 = InteractObjectData->Option4;
 			EventID4 = InteractObjectData->EventID4;
 		}
-
-		//}
 	}
 }
 
-void AInteractObjectInterface::UpdateInteractObjectScript(FString NewInteractObjectScript)
+void AInteractObjectInterface::UpdateCurrentScript(FString NewScript)
 {
-	1;
+	if(ScriptDataTable)
+	{
+		//for(FName RowName : InteractObjectDataTable -> GetRowNames())
+		//{
+		//UE_LOG(LogTemp, Warning, TEXT("RowName: %s"), *RowName.ToString());
+		UE_LOG(LogTemp, Warning, TEXT("RowName: %s"),*FPaths::ProjectDir());
+		this->CurrentScript = NewScript;
+		FTableRowScript* ScriptData =
+			ScriptDataTable->FindRow<FTableRowScript>(FName(CurrentScript),TEXT(""));
+		if(ScriptDataTable)
+		{
+			ScriptPath = ScriptData->ScriptPath;
+		}
+	}
+	FString FullScriptPath = FPaths::ProjectDir() + ScriptPath;
+	FullScriptPath = FPaths::ConvertRelativePathToFull(FullScriptPath);
+	if (FPlatformFileManager::Get().GetPlatformFile().FileExists(*FullScriptPath))
+	{
+		FFileHelper::LoadFileToString(Script,*FullScriptPath);
+		UE_LOG(LogTemp,Warning,TEXT("%d"),*Script);
+	}
 }
+
+
 

@@ -33,6 +33,7 @@ public:
 	//Targets
 	UPROPERTY()
 	AActor *MotherObject;
+	AInteractObjectInterface *MotherIOInterface;
 	//EventFlag
 	bool EventFlag0 = false;
 	bool EventFlag1 = false;
@@ -76,9 +77,14 @@ public:
 		int ScriptExecutorPC=0;
 		int ScriptExecutorIR;
 	//03 InteractorObjectStatusChange
-		void InteractObjectStatusChange(FString NewStatus);	
+		void ItemStatusChange(FString NewStatus);	
 	//04 SubEventRelease
 		void ReleaseSubEvent(int SubEventID,AGameEvent* FatherObject);
+	//05 InputDetection
+		void Option1Detection();//ID0000_1
+		void Option2Detection();//ID00002
+		void Option3Detection();//ID00003
+		void Option4Detection();//ID00004
 	// AffectCharacter
 	// AffectFields
 };

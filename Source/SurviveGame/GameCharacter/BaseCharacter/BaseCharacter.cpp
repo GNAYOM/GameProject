@@ -5,7 +5,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/GameModeBase.h"
 #include "Windows/AllowWindowsPlatformTypes.h"
-#include "SurviveGame/DataStructure/TestCharacterStructure/WeightAffectedMovement/FTableRowWeightAffectedMovement.h"
+#include "SurviveGame/DataStructure/BaseCharacterStructure/WeightAffectedMovement/FTableRowWeightAffectedMovement.h"
 #include "SurviveGame/GameState/MainGameState.h"
 
 // Sets default values
@@ -73,25 +73,25 @@ void ABaseCharacter::CameraPitchRotate(const FInputActionValue& val)
 void ABaseCharacter::Option1Selected()
 {
 	UE_LOG(LogTemp,Warning,TEXT("Option1Selected"));
-	InteractManagerComponent->InteractObjectOptionSelected(1);
+	InteractManagerComponent->InteractObjectOptionSelected(InputEnum::Option1);
 }
 
 void ABaseCharacter::Option2Selected()
 {
 	UE_LOG(LogTemp,Warning,TEXT("Option2Selected"));
-	InteractManagerComponent->InteractObjectOptionSelected(2);
+	InteractManagerComponent->InteractObjectOptionSelected(InputEnum::Option2);
 }
 
 void ABaseCharacter::Option3Selected()
 {
 	UE_LOG(LogTemp,Warning,TEXT("Option3Selected"));
-	InteractManagerComponent->InteractObjectOptionSelected(3);
+	InteractManagerComponent->InteractObjectOptionSelected(InputEnum::Option3);
 }
 
 void ABaseCharacter::Option4Selected()
 {
 	UE_LOG(LogTemp,Warning,TEXT("Option4Selected"));
-	InteractManagerComponent->InteractObjectOptionSelected(4);
+	InteractManagerComponent->InteractObjectOptionSelected(InputEnum::Option4);
 }
 
 // Called when the game starts or when spawned
@@ -100,7 +100,7 @@ void ABaseCharacter::BeginPlay()
 	Super::BeginPlay();
 	MainGameState = GetWorld()->GetAuthGameMode()->GetGameState<AMainGameState>();
 	WeightAffectedMovementDataTable = LoadObject<UDataTable>(this
-		,TEXT("/Script/Engine.DataTable'/Game/GameContent/DataTable/TestCharacter/WeightSystem/WeightAffectedMovementDataTable.WeightAffectedMovementDataTable'"));
+		,TEXT("/Script/Engine.DataTable'/Game/GameContent/DataTable/Character/BaseCharacter/WeightSystem/WeightAffectedMovementDataTable.WeightAffectedMovementDataTable'"));
 	WeightChange();
 }
 

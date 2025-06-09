@@ -7,6 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "SurviveGame/GameEvent/GameEvent.h"
 #include "SurviveGame/InteractObject/InteractObjectInterface.h"
+#include "SurviveGame/Enum/InputEnum/InputEnum.h"
 #include "InteractObject.generated.h"
 UCLASS()
 class SURVIVEGAME_API AInteractObject : public AInteractObjectInterface
@@ -42,7 +43,7 @@ public:
 	//EventRelease
 	void ReleaseEventActively(int OptionSlotNum);
 	//InteractObjectStatusChanged
-	void UpdateInteractObjectStatus(FString NewInteractObjectStatus) override;
+	void UpdateItemStatus(FString NewInteractObjectStatus) override;
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 

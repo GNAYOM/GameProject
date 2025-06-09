@@ -4,7 +4,7 @@
 #include "InteractObject.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "SurviveGame/DataStructure/InteractObjectStructure/FTableRowInteractObject.h"
+#include "SurviveGame/DataStructure/InteractObjectStructure/ItemStructure/FTableRowItem.h"
 
 // Sets default values
 AInteractObject::AInteractObject()
@@ -28,26 +28,8 @@ void AInteractObject::BeginPlay()
 	Super::BeginPlay(); 
 	/*InteractObjectDataTable = LoadObject<UDataTable>(this
 		,TEXT("/Script/Engine.DataTable'/Game/GameContent/DataTable/InterractObject/InteractObjectDataTable.InteractObjectDataTable'"));*/
-	if(InteractObjectDataTable)
-	{
-		//for(FName RowName : InteractObjectDataTable -> GetRowNames())
-		//{
-			//UE_LOG(LogTemp, Warning, TEXT("RowName: %s"), *RowName.ToString());
-		FTableRowInteractObject* InteractObjectData =
-	InteractObjectDataTable->FindRow<FTableRowInteractObject>(FName(InteractObjectNameStatus),TEXT(""));
-		if(InteractObjectData)
-		{
-			Option1 = InteractObjectData->Option1;
-			EventID1 = InteractObjectData->EventID1;
-			Option2 = InteractObjectData->Option2;
-			EventID2 = InteractObjectData->EventID2;
-			Option3 = InteractObjectData->Option3;
-			EventID3 = InteractObjectData->EventID3;
-			Option4 = InteractObjectData->Option4;
-			EventID4 = InteractObjectData->EventID4;
-		}
-		//}
-	}
+	UpdateItemStatus(ItemStatus);
+	UpdateCurrentScript(CurrentScript);
 }
 
 void AInteractObject::ReleaseEventActively(int OptionSlotNum)
@@ -56,27 +38,28 @@ void AInteractObject::ReleaseEventActively(int OptionSlotNum)
 	int tmp_InEventID;
 	switch (OptionSlotNum)
 	{
-	case 1: tmp_InEventID = EventID1;
+	case InputEnum::Option1: tmp_InEventID = EventID1;
 		break;
-	case 2: tmp_InEventID = EventID2;
+	case InputEnum::Option2: tmp_InEventID = EventID2;
 		break;
-	case 3: tmp_InEventID = EventID3;
+	case InputEnum::Option3: tmp_InEventID = EventID3;
 		break;
-	case 4: tmp_InEventID = EventID4;
+	case InputEnum::Option4: tmp_InEventID = EventID4;
 		break;
 	}
 	//延迟 spawn
 	AGameEvent* tmp_NewGameEvent =Cast<AGameEvent>(UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), AGameEvent::StaticClass(), FTransform::Identity,ESpawnActorCollisionHandlingMethod::Undefined,this)); 
 	tmp_NewGameEvent->EventID = tmp_InEventID;
 	tmp_NewGameEvent->MotherObject = this;
+	tmp_NewGameEvent->MotherIOInterface = Cast<AInteractObjectInterface>(this);
 	UGameplayStatics::FinishSpawningActor(tmp_NewGameEvent,FTransform::Identity);
 	tmp_NewGameEvent->AttachToActor(this,FAttachmentTransformRules::KeepWorldTransform);
 	
 }
 
-void AInteractObject::UpdateInteractObjectStatus(FString NewInteractObjectNameStatus)
+void AInteractObject::UpdateItemStatus(FString NewItemStatus)
 {
-	Super::UpdateInteractObjectStatus(NewInteractObjectNameStatus);
+	Super::UpdateItemStatus(NewItemStatus);
 }
 
 
@@ -102,7 +85,10 @@ void AInteractObject::OnCamEndOverlapEnd(UPrimitiveComponent* OverlappedComponen
 void AInteractObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	Option1JustPressed = false;
+	Option2JustPressed = false;
+	Option3JustPressed = false;
+	Option4JustPressed = false;
 }
 
 

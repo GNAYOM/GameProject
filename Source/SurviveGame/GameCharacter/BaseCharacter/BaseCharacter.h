@@ -13,6 +13,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "SurviveGame/InteractManagerComponent/InteractManagerComponent.h"
 #include "SurviveGame/GameState/MainGameState.h"
+#include "SurviveGame/Enum/InputEnum/InputEnum.h"
 #include "BaseCharacter.generated.h"
 
 UCLASS()

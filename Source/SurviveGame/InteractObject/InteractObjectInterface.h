@@ -23,11 +23,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	UPROPERTY(EditAnywhere)
-	FString InteractObjectNameStatus;
+	FString ItemStatus;
+	UPROPERTY(EditAnywhere)
+	FString CurrentScript;
+	UPROPERTY(EditAnywhere)
+	FString ScriptPath;
 	UPROPERTY(EditAnywhere)
 	FString Script;
 	UPROPERTY(EditAnywhere)
-	UDataTable* InteractObjectDataTable;
+	UDataTable* ItemDataTable;
+	UPROPERTY(EditAnywhere)
+	UDataTable* ScriptDataTable;
 	//InteractOption
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	FText	Option1;
@@ -45,8 +51,13 @@ public:
 	FText	Option4;
 	UPROPERTY(EditAnywhere)
 	int EventID4;
+	//ForKeyDetection
+	bool Option1JustPressed = false;
+	bool Option2JustPressed = false;
+	bool Option3JustPressed = false;
+	bool Option4JustPressed = false;
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual void UpdateInteractObjectStatus(FString NewInteractObjectStatus);
-	virtual void UpdateInteractObjectScript(FString NewInteractObjectScript);
+	virtual void UpdateItemStatus(FString NewItemStatus);
+	virtual void UpdateCurrentScript(FString NewScript);
 };
