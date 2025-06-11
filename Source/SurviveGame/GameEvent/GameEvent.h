@@ -10,6 +10,21 @@
 
 using namespace std;
 
+struct AndConditionGroup
+{
+	bool *ConditionA;
+	bool *ConditionB;
+	bool Result = false;
+	bool JudgeStart;
+};
+
+struct OrConditionGroup
+{
+	bool *ConditionA;
+	bool *ConditionB;
+	bool Result = false;
+	bool JudgeStart;
+};
 UCLASS()
 class SURVIVEGAME_API AGameEvent : public AActor
 {
@@ -33,10 +48,24 @@ public:
 	//Targets
 	UPROPERTY()
 	AActor *MotherObject;
+	UPROPERTY()
 	AInteractObjectInterface *MotherIOInterface;
+	UPROPERTY()
+	AGameEvent *MotherGameEvent;
+	//ConditionRegister
+	AndConditionGroup AND00 ;
+	AndConditionGroup AND01 ;
+	AndConditionGroup AND02 ;
+	AndConditionGroup AND03 ;
+	OrConditionGroup OR00 ;
+	OrConditionGroup OR01 ;
+	OrConditionGroup OR02 ;
+	OrConditionGroup OR03 ;
 	//EventFlag
+	bool CompileFlag = false;
+	bool DefaultFlag = false;
 	bool EventFlag0 = false;
-	bool EventFlag1 = false;
+	bool EventFlag1 = true;
 	bool EventFlag2 = false;
 	bool EventFlag3 = false;
 	bool EventFlag4 = false;
@@ -62,6 +91,8 @@ public:
 	int EventID  = 0;
 	//EventSelector
 	void MainEventSelector(int ID);
+	//ConditionRegisterInitialize
+	void ConditionRegisterInitialize();
 	//Events
 	//01 Test
 		//IOID 0001
@@ -71,20 +102,30 @@ public:
 	//02 ScriptExecutor
 		void ScriptExecutor();//EventID 200000000
 		void ScriptCompiler(FString Path);
+		bool& FlagParamExplaner(FString Flag);
+		bool InputExplaner(FString Input);
 		TArray<FString>	ScriptInstructions;
 		TArray<TArray<FString>> ScriptInstructionParams;
 		FString ScriptPath;
 		int ScriptExecutorPC=0;
 		int ScriptExecutorIR;
-	//03 InteractorObjectStatusChange
-		void ItemStatusChange(FString NewStatus);	
-	//04 SubEventRelease
-		void ReleaseSubEvent(int SubEventID,AGameEvent* FatherObject);
+	//03 ItemStatusChange
+		void ItemStatusChange(FString NewStatus);
+	//04 EventRelease
+		void GameEventSubEventRelease(int SubEventID,AGameEvent* FatherObject);
 	//05 InputDetection
-		void Option1Detection();//ID0000_1
+		void Option1Detection();//ID00001
 		void Option2Detection();//ID00002
 		void Option3Detection();//ID00003
 		void Option4Detection();//ID00004
+	//06 ConditionJudgement
+		void JudgeAsConditionGroup(bool &A,bool &B,AndConditionGroup &AND);
+		void JudgeAsConditionGroup(bool &A,bool &B,OrConditionGroup &OR);
+		void AndGroupGetResult(AndConditionGroup &AndConditionGroup);
+		void OrGroupGetResult(OrConditionGroup &OrConditionGroup);
+		void UpdateConditionGroupsResult();
+	//07 ConditionalConstruct
+	//08 WaitInput
 	// AffectCharacter
 	// AffectFields
 };
