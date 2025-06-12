@@ -38,7 +38,7 @@ void AGameEvent::MainEventSelector(int ID)
 	case 500000004 :CurrentEvent_0_Param = &AGameEvent::Option4Detection;
 		break;
 	}
-	UE_LOG(LogTemp,Warning,TEXT("%d"),ID);
+
 }
 
 void AGameEvent::BeginPlay()
@@ -65,6 +65,7 @@ void AGameEvent::Tick(float DeltaTime)
 		(this->*CurrentEvent_1_StringParam)(StringEventParam0);
 	}
 	UpdateConditionGroupsResult();
+	UE_LOG(LogTemp,Warning,TEXT("pc::%d"),ScriptExecutorPC);
 }
 
 //01 Test
@@ -119,6 +120,7 @@ void AGameEvent::Test00003()
 }
 
 
+//02 ScriptExecutor
 void AGameEvent::ScriptExecutor()
 {
 	
@@ -129,70 +131,88 @@ void AGameEvent::ScriptExecutor()
 		InteractObjectStatusChange("Test1");*/
 		CompileFlag = true;
 	}
-	if(ScriptExecutorPC == ScriptInstructions.Num())
+	if(ScriptExecutorPC == ScriptInstructions.Num() || ScriptExecutorPC < 0)
 	{Destroy();}
 	else
 	{
 		//03 ItemStatusChange
-		if(ScriptInstructions[ScriptExecutorPC].Equals("ItemStatusChange"))//Param(ItemStatus)
+		if(GetPCInstruction().Equals("ItemStatusChange"))//Param(ItemStatus)
 		{
-				//ReleaseSubEvent(100100002,this);
-				ItemStatusChange(ScriptInstructionParams[ScriptExecutorPC][0]);
+				ItemStatusChange(GetPCParam(0));
 				ScriptExecutorPC++;
 		}
-		else if(ScriptInstructions[ScriptExecutorPC].Equals("ItemStatusScriptTrigger"))
+		else if(GetPCInstruction().Equals("ItemStatusScriptTrigger"))
 		{
-			//ReleaseSubEvent(100100002,this);
 			ItemStatusChange("ScriptTrigger");
 			ScriptExecutorPC++;
 		}
-		else if(ScriptInstructions[ScriptExecutorPC].Equals("ItemStatusInputDetection"))
+		else if(GetPCInstruction().Equals("ItemStatusInputDetection"))
 		{
-			//ReleaseSubEvent(100100002,this);
 			ItemStatusChange("InputDetection");
-			/*
-			bool &test = FlagParamExplaner("ggg");
-			test = false;
-			UE_LOG(LogTemp,Warning,TEXT("%d"),EventFlag1);	
-			*///FlagTest
 			ScriptExecutorPC++;
 		}
-		//08 WaitInput
-		else if(ScriptInstructions[ScriptExecutorPC].Equals("ContinueWhenInputDetected"))//Param(Input)
+		//07 ConditionalConstruct
+			else if(GetPCInstruction().Equals("ContinueIfFlagTrue"))
+			//Param(Input,InstructionIndex,JumpOnce)
 		{
-			if(InputExplaner(ScriptInstructionParams[ScriptExecutorPC][0]))
+			if(FlagParamExplainer(GetPCParam(0)))
 			{
 				ScriptExecutorPC++;
 			}
 		}
-		else if(ScriptInstructions[ScriptExecutorPC].Equals("ToggleFlagContinueWhenInputDetected"))//Param(Input,Flag)
+		//08 WaitInput
+		else if(GetPCInstruction().Equals("ContinueWhenInputDetected"))//Param(Input)
 		{
-			if(InputExplaner(ScriptInstructionParams[ScriptExecutorPC][0]))
+			if(InputExplainer(GetPCParam(0)))
 			{
-				bool& SelectedFlag = FlagParamExplaner(ScriptInstructionParams[ScriptExecutorPC][1]);
+				ScriptExecutorPC++;
+			}
+		}
+		else if(GetPCInstruction().Equals("ToggleFlagContinueWhenInputDetected"))//Param(Input,Flag)
+		{
+			if(InputExplainer(GetPCParam(0)))
+			{
+				bool& SelectedFlag = FlagParamExplainer(GetPCParam(1));
 				SelectedFlag = !SelectedFlag;
 				ScriptExecutorPC++;
 			}
 		}
 		//06 JudgeAsConditionGroup
-		else if(ScriptInstructions[ScriptExecutorPC].Equals("JudgeAsConditionGroup"))//Param(ConditionA,ConditionB,ConditionRegister)
+		else if(GetPCInstruction().Equals("JudgeFlagsAsConditionGroup"))//Param(ConditionA,ConditionB,ConditionRegister)
 		{
-
-			JudgeAsConditionGroup(FlagParamExplaner(ScriptInstructionParams[ScriptExecutorPC][0]),FlagParamExplaner(ScriptInstructionParams[ScriptExecutorPC][1]),OR00);
-			JudgeAsConditionGroup(FlagParamExplaner(ScriptInstructionParams[ScriptExecutorPC][0]),FlagParamExplaner(ScriptInstructionParams[ScriptExecutorPC][1]),AND00);
+			if(GetPCParam(2).StartsWith("A"))
+			{
+				JudgeAsConditionGroup(FlagParamExplainer(GetPCParam(0))
+					,FlagParamExplainer(GetPCParam(1))
+					,AndConditionGroupParamExplainer(GetPCParam(2)));
+			}
+			if(GetPCParam(2).StartsWith("O"))
+			{
+				JudgeAsConditionGroup(FlagParamExplainer(GetPCParam(0))
+					,FlagParamExplainer(GetPCParam(1))
+					,OrConditionGroupParamExplainer(GetPCParam(2)));
+			}
 			ScriptExecutorPC++;
 		}
-		else if(ScriptInstructions[ScriptExecutorPC].Equals("DestroyWhenInputOption1"))//Test
+		//Test
+		else if(GetPCInstruction().Equals("DestroyWhenInputOption1"))
 		{
 			
 			UE_LOG(LogTemp,Warning,TEXT("waitkey"));
 			if(MotherIOInterface->Option1JustPressed)
 			{Destroy();}
 		}
+		else if(GetPCInstruction().Equals("JumpWhenInputDetected"))
+			//Param(Input,InstructionIndex,JumpOnce)
+		{
+			if(InputExplainer(GetPCParam(0)))
+			{
+				ScriptExecutorPC = FCString::Atoi(*GetPCParam(1));
+			}
+		}
 	}
 }
 
-//02 ScriptExecutor
 void AGameEvent::ScriptCompiler(FString Path)
 {
 	stack<char> OperatorStack;
@@ -262,43 +282,133 @@ void AGameEvent::ScriptCompiler(FString Path)
 
 }
 
-bool& AGameEvent::FlagParamExplaner(FString Flag)
+FString AGameEvent::GetPCInstruction()
 {
-	//EventFlag
-	if(Flag.Equals("Flag0"))
-		return EventFlag0;
-
-	else if(Flag.Equals("Flag1"))
-		return EventFlag1;
-	
-	else if(Flag.Equals("Flag2"))
-		return EventFlag2;
-	
-	else if(Flag.Equals("Flag3"))
-		return EventFlag3;
-	
-	else if(Flag.Equals("Flag4"))
-		return EventFlag4;
-	
-	else if(Flag.Equals("Flag5"))
-		return EventFlag5;
-	
-	else if(Flag.Equals("Flag6"))
-		return EventFlag6;
-	
-	else if(Flag.Equals("Flag7"))
-		return EventFlag7;
-	
-	else if(Flag.Equals("Flag8"))
-		return EventFlag8;
-	
-	else if(Flag.Equals("Flag9"))
-		return EventFlag9;
-	else
-		return EventFlag0;
+	return ScriptInstructions[ScriptExecutorPC];
 }
 
-bool AGameEvent::InputExplaner(FString Input)
+FString AGameEvent::GetPCParam(int index)
+{
+	return ScriptInstructionParams[ScriptExecutorPC][index];
+}
+
+bool& AGameEvent::FlagParamExplainer(FString Flag)
+{
+	//EventFlagTrue/False
+	if(Flag.Equals("True"))
+		return EventFlagTrue;
+	if(Flag.Equals("False"))
+		return EventFlagFalse;
+	if(Flag.Equals("JumpFlag"))
+		return JumpFlag;
+	//EventFlag
+	if (Flag.StartsWith("F"))
+	{
+		if(Flag.Equals("Flag0"))
+			return EventFlag0;
+
+		else if(Flag.Equals("Flag1"))
+			return EventFlag1;
+	
+		else if(Flag.Equals("Flag2"))
+			return EventFlag2;
+	
+		else if(Flag.Equals("Flag3"))
+			return EventFlag3;
+	
+		else if(Flag.Equals("Flag4"))
+			return EventFlag4;
+	
+		else if(Flag.Equals("Flag5"))
+			return EventFlag5;
+	
+		else if(Flag.Equals("Flag6"))
+			return EventFlag6;
+	
+		else if(Flag.Equals("Flag7"))
+			return EventFlag7;
+	
+		else if(Flag.Equals("Flag8"))
+			return EventFlag8;
+	
+		else if(Flag.Equals("Flag9"))
+			return EventFlag9;
+		else
+			return EventFlag0;
+	}
+	//ConditionGroupResultFlag
+	else if(Flag.StartsWith("A") || Flag.StartsWith("O"))
+	{
+		if(Flag.Equals("AND00"))
+			return AND00.Result;
+		
+		else if(Flag.Equals("AND01"))
+			return AND01.Result;
+		
+		else if(Flag.Equals("AND02"))
+			return AND02.Result;
+		
+		else if(Flag.Equals("AND03"))
+			return AND03.Result;
+		
+		else if(Flag.Equals("OR00"))
+			return OR00.Result;
+		
+		else if(Flag.Equals("OR01"))
+			return OR01.Result;
+		
+		else if(Flag.Equals("OR02"))
+			return OR02.Result;
+		
+		else if(Flag.Equals("OR03"))
+			return OR03.Result;
+	}
+	return EventFlagFalse;
+}
+
+AndConditionGroup& AGameEvent::AndConditionGroupParamExplainer(FString AndConditionGroup)
+{
+	if (AndConditionGroup.Equals("AND00"))
+	{
+		return AND00;
+	}
+	if (AndConditionGroup.Equals("AND01"))
+	{
+		return AND01;
+	}
+	if (AndConditionGroup.Equals("AND02"))
+	{
+		return AND02;
+	}
+	if (AndConditionGroup.Equals("AND03"))
+	{
+		return AND03;
+	}
+	return DefaultAND;
+}
+
+OrConditionGroup& AGameEvent::OrConditionGroupParamExplainer(FString OrConditionGroup)
+{
+	if (OrConditionGroup.Equals("OR00"))
+	{
+		return OR00;
+	}
+	if (OrConditionGroup.Equals("OR01"))
+	{
+		return OR00;
+	}
+	if (OrConditionGroup.Equals("OR02"))
+	{
+		return OR02;
+	}
+	if (OrConditionGroup.Equals("OR03"))
+	{
+		return OR03;
+	}
+	return DefaultOR;
+}
+
+bool AGameEvent::InputExplainer(FString Input)
 {
 	bool InputStatus = false;
 	if(Input.Equals("Option1"))

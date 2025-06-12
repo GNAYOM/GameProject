@@ -53,19 +53,24 @@ public:
 	UPROPERTY()
 	AGameEvent *MotherGameEvent;
 	//ConditionRegister
-	AndConditionGroup AND00 ;
-	AndConditionGroup AND01 ;
-	AndConditionGroup AND02 ;
-	AndConditionGroup AND03 ;
-	OrConditionGroup OR00 ;
-	OrConditionGroup OR01 ;
-	OrConditionGroup OR02 ;
-	OrConditionGroup OR03 ;
+	AndConditionGroup DefaultAND;
+	AndConditionGroup AND00;
+	AndConditionGroup AND01;
+	AndConditionGroup AND02;
+	AndConditionGroup AND03;
+	OrConditionGroup DefaultOR;
+	OrConditionGroup OR00;
+	OrConditionGroup OR01;
+	OrConditionGroup OR02;
+	OrConditionGroup OR03;
 	//EventFlag
 	bool CompileFlag = false;
+	bool JumpFlag = false;
 	bool DefaultFlag = false;
+	bool EventFlagTrue = true;
+	bool EventFlagFalse = false;
 	bool EventFlag0 = false;
-	bool EventFlag1 = true;
+	bool EventFlag1 = false;
 	bool EventFlag2 = false;
 	bool EventFlag3 = false;
 	bool EventFlag4 = false;
@@ -102,13 +107,17 @@ public:
 	//02 ScriptExecutor
 		void ScriptExecutor();//EventID 200000000
 		void ScriptCompiler(FString Path);
-		bool& FlagParamExplaner(FString Flag);
-		bool InputExplaner(FString Input);
+		FString GetPCInstruction();
+		FString GetPCParam(int ParamIndex);
+		bool& FlagParamExplainer(FString Flag);
+		AndConditionGroup& AndConditionGroupParamExplainer(FString AndConditionGroup);
+		OrConditionGroup& OrConditionGroupParamExplainer(FString OrConditionGroup);
+		bool InputExplainer(FString Input);
 		TArray<FString>	ScriptInstructions;
 		TArray<TArray<FString>> ScriptInstructionParams;
 		FString ScriptPath;
 		int ScriptExecutorPC=0;
-		int ScriptExecutorIR;
+		//int ScriptExecutorIR;
 	//03 ItemStatusChange
 		void ItemStatusChange(FString NewStatus);
 	//04 EventRelease
