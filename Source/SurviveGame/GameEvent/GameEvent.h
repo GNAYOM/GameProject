@@ -118,8 +118,8 @@ public:
 		FString ScriptPath;
 		int ScriptExecutorPC=0;
 		//int ScriptExecutorIR;
-	//03 ItemStatusChange
-		void ItemStatusChange(FString NewStatus);
+	//03 BehaviorStatusChange
+		void BehaviorStatusChange(FString NewStatus);
 	//04 EventRelease
 		void GameEventSubEventRelease(int SubEventID,AGameEvent* FatherObject);
 	//05 InputDetection

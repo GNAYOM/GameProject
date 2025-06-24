@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
-#include "FTableRowItem.generated.h"
+#include "FTableRowBehavior.generated.h"
 /**
  * 
  */
 USTRUCT(BlueprintType)
-struct FTableRowItem : public FTableRowBase
+struct FTableRowBehavior : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 public:
-	FTableRowItem();
+	FTableRowBehavior();
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,DisplayName = "Option1")
 	FText Option1;
@@ -31,5 +31,7 @@ public:
 	FText Option4;
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,DisplayName = "EventID4")
 	int EventID4;
-	~FTableRowItem();
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,DisplayName = "AutoRelease")
+	int EVENTIDAutoRelease;
+	~FTableRowBehavior();
 };

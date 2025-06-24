@@ -2,8 +2,9 @@
 
 
 #include "InteractObjectInterface.h"
-#include "SurviveGame/DataStructure/InteractObjectStructure/ItemStructure/FTableRowItem.h"
+#include "SurviveGame/DataStructure/InteractObjectStructure/BehaviorStructure/FTableRowBehavior.h"
 #include "SurviveGame/DataStructure/InteractObjectStructure/ScriptStructure/FTableRowScript.h"
+#include "SurviveGame/DataStructure/InteractObjectStructure/PropertiesStructure/FTableRowProperties.h"
 // Sets default values
 AInteractObjectInterface::AInteractObjectInterface()
 {
@@ -33,16 +34,16 @@ void AInteractObjectInterface::SetupPlayerInputComponent(UInputComponent* Player
 }
 
 
-void AInteractObjectInterface::UpdateItemStatus(FString NewItemStatus)
+void AInteractObjectInterface::UpdateBehaviorStatus(FString NewItemStatus)
 {
-	if(ItemDataTable)
+	if(BehaviorDataTable)
 	{
 		//for(FName RowName : InteractObjectDataTable -> GetRowNames())
 		//{
 		//UE_LOG(LogTemp, Warning, TEXT("RowName: %s"), *RowName.ToString());
-		this->ItemStatus = NewItemStatus;
-		FTableRowItem* InteractObjectData =
-			ItemDataTable->FindRow<FTableRowItem>(FName(ItemStatus),TEXT(""));
+		this->BehaviorStatus = NewItemStatus;
+		FTableRowBehavior* InteractObjectData =
+			BehaviorDataTable->FindRow<FTableRowBehavior>(FName(BehaviorStatus),TEXT(""));
 		if(InteractObjectData)
 		{
 			Option1 = InteractObjectData->Option1;
@@ -53,6 +54,21 @@ void AInteractObjectInterface::UpdateItemStatus(FString NewItemStatus)
 			EventID3 = InteractObjectData->EventID3;
 			Option4 = InteractObjectData->Option4;
 			EventID4 = InteractObjectData->EventID4;
+			EVENTIDAutoRelease = InteractObjectData->EVENTIDAutoRelease;
+		}
+	}
+}
+
+void AInteractObjectInterface::UpdateInitialProperties(FString NewProperties)
+{
+	if(PropertiesDataTable)
+	{
+		this->InitialProperties = NewProperties;
+		FTableRowProperties* ScriptData =
+			PropertiesDataTable->FindRow<FTableRowProperties>(FName(InitialProperties),TEXT(""));
+		if(PropertiesDataTable)
+		{
+			Weight = ScriptData->Weight;
 		}
 	}
 }

@@ -66,7 +66,7 @@ void UInteractManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	for(int i =0;AInteractObject* IO : tmp_InteractObjectsSorted)
 	{
 		
-		FString IOName = IO -> ItemStatus;
+		FString IOName = IO -> BehaviorStatus;
 		//UE_LOG(LogTemp,Warning,TEXT("%d  %s"),i,*IOName);
 		i++;
 	}

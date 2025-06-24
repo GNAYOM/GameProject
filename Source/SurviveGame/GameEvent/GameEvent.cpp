@@ -138,17 +138,17 @@ void AGameEvent::ScriptExecutor()
 		//03 ItemStatusChange
 		if(GetPCInstruction().Equals("ItemStatusChange"))//Param(ItemStatus)
 		{
-				ItemStatusChange(GetPCParam(0));
-				ScriptExecutorPC++;
+			BehaviorStatusChange(GetPCParam(0));
+			ScriptExecutorPC++;
 		}
 		else if(GetPCInstruction().Equals("ItemStatusScriptTrigger"))
 		{
-			ItemStatusChange("ScriptTrigger");
+			BehaviorStatusChange("ScriptTrigger");
 			ScriptExecutorPC++;
 		}
 		else if(GetPCInstruction().Equals("ItemStatusInputDetection"))
 		{
-			ItemStatusChange("InputDetection");
+			BehaviorStatusChange("InputDetection");
 			ScriptExecutorPC++;
 		}
 		//07 ConditionalConstruct
@@ -426,9 +426,9 @@ bool AGameEvent::InputExplainer(FString Input)
 }
 
 //03 ItemStatusChange
-void AGameEvent::ItemStatusChange(FString NewStatus)//只有最外层事件可以调用
+void AGameEvent::BehaviorStatusChange(FString NewStatus)//只有最外层事件可以调用
 {
-	MotherIOInterface->UpdateItemStatus(NewStatus);
+	MotherIOInterface->UpdateBehaviorStatus(NewStatus);
 }
 
 //04 EventRelease

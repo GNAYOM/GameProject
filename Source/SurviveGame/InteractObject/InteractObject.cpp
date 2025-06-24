@@ -4,7 +4,7 @@
 #include "InteractObject.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "SurviveGame/DataStructure/InteractObjectStructure/ItemStructure/FTableRowItem.h"
+#include "SurviveGame/DataStructure/InteractObjectStructure/BehaviorStructure/FTableRowBehavior.h"
 
 // Sets default values
 AInteractObject::AInteractObject()
@@ -28,9 +28,24 @@ void AInteractObject::BeginPlay()
 	Super::BeginPlay(); 
 	/*InteractObjectDataTable = LoadObject<UDataTable>(this
 		,TEXT("/Script/Engine.DataTable'/Game/GameContent/DataTable/InterractObject/InteractObjectDataTable.InteractObjectDataTable'"));*/
-	UpdateItemStatus(ItemStatus);
+	UpdateBehaviorStatus(BehaviorStatus);
 	UpdateCurrentScript(CurrentScript);
+	UpdateInitialProperties(InitialProperties);
+	if(EVENTIDAutoRelease != 0)
+		AutoReleaseEvent();
 }
+
+void AInteractObject::AutoReleaseEvent()
+{
+	//延迟 spawn
+	AGameEvent* tmp_NewGameEvent =Cast<AGameEvent>(UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), AGameEvent::StaticClass(), FTransform::Identity,ESpawnActorCollisionHandlingMethod::Undefined,this)); 
+	tmp_NewGameEvent->EventID = EVENTIDAutoRelease;
+	tmp_NewGameEvent->MotherObject = this;
+	tmp_NewGameEvent->MotherIOInterface = Cast<AInteractObjectInterface>(this);
+	UGameplayStatics::FinishSpawningActor(tmp_NewGameEvent,FTransform::Identity);
+	tmp_NewGameEvent->AttachToActor(this,FAttachmentTransformRules::KeepWorldTransform);
+}
+
 
 void AInteractObject::ReleaseEventActively(int OptionSlotNum)
 {
@@ -57,9 +72,9 @@ void AInteractObject::ReleaseEventActively(int OptionSlotNum)
 	
 }
 
-void AInteractObject::UpdateItemStatus(FString NewItemStatus)
+void AInteractObject::UpdateBehaviorStatus(FString NewItemStatus)
 {
-	Super::UpdateItemStatus(NewItemStatus);
+	Super::UpdateBehaviorStatus(NewItemStatus);
 }
 
 
@@ -90,7 +105,6 @@ void AInteractObject::Tick(float DeltaTime)
 	Option3JustPressed = false;
 	Option4JustPressed = false;
 }
-
 
 
 

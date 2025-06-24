@@ -23,7 +23,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	UPROPERTY(EditAnywhere)
-	FString ItemStatus;
+	FString BehaviorStatus;
+	UPROPERTY(EditAnywhere)
+	FString InitialProperties;
 	UPROPERTY(EditAnywhere)
 	FString CurrentScript;
 	UPROPERTY(EditAnywhere)
@@ -31,7 +33,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	FString Script;
 	UPROPERTY(EditAnywhere)
-	UDataTable* ItemDataTable;
+	UDataTable* BehaviorDataTable;
+	UPROPERTY(EditAnywhere)
+	UDataTable* PropertiesDataTable;
 	UPROPERTY(EditAnywhere)
 	UDataTable* ScriptDataTable;
 	//InteractOption
@@ -51,6 +55,11 @@ public:
 	FText	Option4;
 	UPROPERTY(EditAnywhere)
 	int EventID4;
+	UPROPERTY(EditAnywhere)
+	int EVENTIDAutoRelease;
+	//Properties
+	UPROPERTY(EditAnywhere)
+	float Weight;
 	//ForKeyDetection
 	bool Option1JustPressed = false;
 	bool Option2JustPressed = false;
@@ -58,6 +67,7 @@ public:
 	bool Option4JustPressed = false;
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual void UpdateItemStatus(FString NewItemStatus);
+	virtual void UpdateBehaviorStatus(FString NewItemStatus);
+	virtual void UpdateInitialProperties(FString NewScript);
 	virtual void UpdateCurrentScript(FString NewScript);
 };
