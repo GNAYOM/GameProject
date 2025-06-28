@@ -15,8 +15,5 @@ class SURVIVEGAME_API AMainGameState : public AGameStateBase
 	GENERATED_BODY()
 	AMainGameState();
 	~AMainGameState() = default;
-public:
-	//PlayerStatus
-	FString WeightStatus;
-	float WeightLoad = 50;
+
 };

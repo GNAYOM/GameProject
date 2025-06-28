@@ -5,5 +5,4 @@
 
 AMainGameState::AMainGameState()
 {
-	WeightLoad = 100000.0f;
 }

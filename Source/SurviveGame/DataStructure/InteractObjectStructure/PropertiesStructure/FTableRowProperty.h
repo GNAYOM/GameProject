@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
-#include "FTableRowProperties.generated.h"
+#include "FTableRowProperty.generated.h"
 /**
  * 
  */
 USTRUCT(BlueprintType)
-struct FTableRowProperties : public FTableRowBase
+struct FTableRowProperty : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 public:
-	FTableRowProperties();
+	FTableRowProperty();
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,DisplayName = "Weight")
 	float Weight;
 
-	~FTableRowProperties();
+	~FTableRowProperty();
 };

@@ -3,7 +3,10 @@
 
 #include "MainGameMode.h"
 
+#include "SurviveGame/PlayerState/MainPlayerState.h"
+
 AMainGameMode::AMainGameMode()
 {
 	GameStateClass = AMainGameState::StaticClass();
+	PlayerStateClass = AMainPlayerState::StaticClass();
 }

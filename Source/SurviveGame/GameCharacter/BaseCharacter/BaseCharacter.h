@@ -13,6 +13,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "SurviveGame/InteractManagerComponent/InteractManagerComponent.h"
 #include "SurviveGame/GameState/MainGameState.h"
+#include "SurviveGame/PlayerState/MainPlayerState.h"
 #include "SurviveGame/Enum/InputEnum/InputEnum.h"
 #include "BaseCharacter.generated.h"
 
@@ -120,7 +121,7 @@ protected:
 
 	//GameState
 	AMainGameState* MainGameState;
-	
+	AMainPlayerState* MainPlayerState;	
 public:
 	//CameraComponents
 	UPROPERTY(EditAnywhere)

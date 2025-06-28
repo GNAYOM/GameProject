@@ -99,6 +99,7 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	MainGameState = GetWorld()->GetAuthGameMode()->GetGameState<AMainGameState>();
+	MainPlayerState = GetWorld()->GetFirstPlayerController()->GetPlayerState<AMainPlayerState>(); 
 	WeightAffectedMovementDataTable = LoadObject<UDataTable>(this
 		,TEXT("/Script/Engine.DataTable'/Game/GameContent/DataTable/Character/BaseCharacter/WeightSystem/WeightAffectedMovementDataTable.WeightAffectedMovementDataTable'"));
 	WeightChange();
@@ -230,15 +231,13 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void ABaseCharacter::WeightChange()
 {
-	float g = GetWorld()->GetAuthGameMode()->GetGameState<AMainGameState>()->WeightLoad;
-	UE_LOG(LogTemp,Warning,TEXT("weight %d"),g);
+	float g = MainPlayerState->WeightLoad;
+	UE_LOG(LogTemp,Warning,TEXT("weight %f"),g);
 	if (WeightAffectedMovementDataTable)
 	{
 		//for (FName RowName : WeightAffectedMovementDataTable->GetRowNames())
 		//{
 			//UE_LOG(LogTemp, Warning, TEXT("RowName: %s"), *RowName.ToString());
-
-			
 			FTableRowWeightAffectedMovement* WeightAffectedMovementData =
 				WeightAffectedMovementDataTable->FindRow<FTableRowWeightAffectedMovement>(FName(WeightStatus),TEXT(""));
 			if(WeightAffectedMovementData)

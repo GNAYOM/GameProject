@@ -4,7 +4,7 @@
 #include "InteractObjectInterface.h"
 #include "SurviveGame/DataStructure/InteractObjectStructure/BehaviorStructure/FTableRowBehavior.h"
 #include "SurviveGame/DataStructure/InteractObjectStructure/ScriptStructure/FTableRowScript.h"
-#include "SurviveGame/DataStructure/InteractObjectStructure/PropertiesStructure/FTableRowProperties.h"
+#include "SurviveGame/DataStructure/InteractObjectStructure/PropertiesStructure/FTableRowProperty.h"
 // Sets default values
 AInteractObjectInterface::AInteractObjectInterface()
 {
@@ -64,11 +64,12 @@ void AInteractObjectInterface::UpdateInitialProperties(FString NewProperties)
 	if(PropertiesDataTable)
 	{
 		this->InitialProperties = NewProperties;
-		FTableRowProperties* ScriptData =
-			PropertiesDataTable->FindRow<FTableRowProperties>(FName(InitialProperties),TEXT(""));
+		FTableRowProperty* ScriptData =
+			PropertiesDataTable->FindRow<FTableRowProperty>(FName(InitialProperties),TEXT(""));
 		if(PropertiesDataTable)
 		{
-			Weight = ScriptData->Weight;
+			Property.Weight = ScriptData->Weight;
+			Weight = Property.Weight;
 		}
 	}
 }

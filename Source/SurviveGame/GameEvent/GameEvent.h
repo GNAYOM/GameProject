@@ -135,6 +135,7 @@ public:
 		void UpdateConditionGroupsResult();
 	//07 ConditionalConstruct
 	//08 WaitInput
+	//09 CollectableItem
 	// AffectCharacter
 	// AffectFields
 };

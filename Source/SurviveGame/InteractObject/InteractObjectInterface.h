@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "SurviveGame/InteractObject/InteractObjectProperty.h"
 #include "InteractObjectInterface.generated.h"
 
 UCLASS(Abstract)
@@ -58,6 +59,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	int EVENTIDAutoRelease;
 	//Properties
+	InteractObjectProperty Property;
 	UPROPERTY(EditAnywhere)
 	float Weight;
 	//ForKeyDetection
