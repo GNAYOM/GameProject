@@ -3,6 +3,7 @@
 
 #include "SpaceUIBase.h"
 
+#include "InteractObject/InteractObject.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties

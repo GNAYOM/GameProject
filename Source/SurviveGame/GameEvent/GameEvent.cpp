@@ -21,22 +21,25 @@ void AGameEvent::MainEventSelector(int ID)
 {
 	switch (ID)
 	{
-	case 100100001 : CurrentEvent_0_Param = &AGameEvent::Test00001;
+	case 1001001 : CurrentEvent_0_Param = &AGameEvent::Test00001;
 		break;
-	case 100100002 : CurrentEvent_0_Param = &AGameEvent::Test00002;
+	case 1001002 : CurrentEvent_0_Param = &AGameEvent::Test00002;
 		break;
-	case 100100003 : CurrentEvent_0_Param = &AGameEvent::Test00003;
+	case 1001003 : CurrentEvent_0_Param = &AGameEvent::Test00003;
 		break;
-	case 200000000: CurrentEvent_0_Param = &AGameEvent::ScriptExecutor;
+	case 2000000: CurrentEvent_0_Param = &AGameEvent::ScriptExecutor;
 		break;
-	case 500000001 :CurrentEvent_0_Param = &AGameEvent::Option1Detection;
+	case 5000001 :CurrentEvent_0_Param = &AGameEvent::Option1Detection;
 		break;
-	case 500000002 :CurrentEvent_0_Param = &AGameEvent::Option2Detection;
+	case 5000002 :CurrentEvent_0_Param = &AGameEvent::Option2Detection;
 		break;
-	case 500000003 :CurrentEvent_0_Param = &AGameEvent::Option3Detection;
+	case 5000003 :CurrentEvent_0_Param = &AGameEvent::Option3Detection;
 		break;
-	case 500000004 :CurrentEvent_0_Param = &AGameEvent::Option4Detection;
+	case 5000004 :CurrentEvent_0_Param = &AGameEvent::Option4Detection;
 		break;
+	case 9000000 :CurrentEvent_0_Param = &AGameEvent::CollectableBehavior;
+		break;
+	case 10000000:CurrentEvent_0_Param = &AGameEvent::BackStorageBehavior;
 	}
 
 }
@@ -65,7 +68,15 @@ void AGameEvent::Tick(float DeltaTime)
 		(this->*CurrentEvent_1_StringParam)(StringEventParam0);
 	}
 	UpdateConditionGroupsResult();
-	UE_LOG(LogTemp,Warning,TEXT("pc::%d"),ScriptExecutorPC);
+	//UE_LOG(LogTemp,Warning,TEXT("pc::%d"),ScriptExecutorPC);
+}
+
+void AGameEvent::InteractObjectInputFlagRefresh()
+{
+	MotherIOInterface->Option1JustPressed = false;
+	MotherIOInterface->Option2JustPressed = false;
+	MotherIOInterface->Option3JustPressed = false;
+	MotherIOInterface->Option4JustPressed = false;
 }
 
 //01 Test
@@ -79,7 +90,7 @@ void AGameEvent::Test00001()
 	//tmp_IO->UpdateInteractObjectStatus("Test1");
 	if(!EventFlag0)
 	{
-		GameEventSubEventRelease(100100002,this);
+		GameEventSubEventRelease(1001002,this);
 		EventFlag0 = true;
 	}
 	if (EventFlag1)
@@ -96,7 +107,7 @@ void AGameEvent::Test00002()
 	
 	if(!EventFlag0)
 	{
-		GameEventSubEventRelease(100100003,this);
+		GameEventSubEventRelease(1001003,this);
 		EventFlag0 = true;
 	}
 	if(EventFlag1)
@@ -132,7 +143,13 @@ void AGameEvent::ScriptExecutor()
 		CompileFlag = true;
 	}
 	if(ScriptExecutorPC == ScriptInstructions.Num() || ScriptExecutorPC < 0)
-	{Destroy();}
+	{
+		MotherIOInterface->Option1JustPressed = false;
+		MotherIOInterface->Option2JustPressed = false;
+		MotherIOInterface->Option3JustPressed = false;
+		MotherIOInterface->Option4JustPressed = false;
+		Destroy();
+	}
 	else
 	{
 		//03 ItemStatusChange
@@ -210,13 +227,14 @@ void AGameEvent::ScriptExecutor()
 				ScriptExecutorPC = FCString::Atoi(*GetPCParam(1));
 			}
 		}
+		InteractObjectInputFlagRefresh();
 	}
 }
 
 void AGameEvent::ScriptCompiler(FString Path)
 {
 	stack<char> OperatorStack;
-	FString TestScript = Cast<AInteractObjectInterface>(MotherObject)->Script;
+	FString TestScript = Cast<AActorInteractObjectInterface>(MotherObject)->Script;
 	FString Tmp_Instruction;
 	FString Tmp_InstructionParam;
 	TArray<FString> Tmp_InstructionParams;
@@ -488,8 +506,8 @@ void AGameEvent::AndGroupGetResult(AndConditionGroup &AndConditionGroup)
 	if(AndConditionGroup.JudgeStart)
 	{
 		AndConditionGroup.Result = *AndConditionGroup.ConditionA && *AndConditionGroup.ConditionB;
-		UE_LOG(LogTemp,Warning,TEXT("%d"),*AndConditionGroup.ConditionA);
-		UE_LOG(LogTemp,Warning,TEXT("%d"),*AndConditionGroup.ConditionB)
+		//UE_LOG(LogTemp,Warning,TEXT("%d"),*AndConditionGroup.ConditionA);
+		//UE_LOG(LogTemp,Warning,TEXT("%d"),*AndConditionGroup.ConditionB)
 	}
 
 }
@@ -499,8 +517,8 @@ void AGameEvent::OrGroupGetResult(OrConditionGroup &OrConditionGroup)
 	if(OrConditionGroup.JudgeStart)
 	{
 		OrConditionGroup.Result = *OrConditionGroup.ConditionA || *OrConditionGroup.ConditionB;
-		UE_LOG(LogTemp,Warning,TEXT("%d"),*OrConditionGroup.ConditionA);
-		UE_LOG(LogTemp,Warning,TEXT("%d"),*OrConditionGroup.ConditionB)
+		//UE_LOG(LogTemp,Warning,TEXT("%d"),*OrConditionGroup.ConditionA);
+		//UE_LOG(LogTemp,Warning,TEXT("%d"),*OrConditionGroup.ConditionB)
 	}
 
 	
@@ -535,6 +553,29 @@ void AGameEvent::UpdateConditionGroupsResult()
 	if(OR03.Result)
 		UE_LOG(LogTemp,Warning,TEXT("OR03:true"));
 }
+
+void AGameEvent::CollectableBehavior()
+{
+	//UE_LOG(LogTemp,Warning,TEXT("CollectableItemBehaviorStart"));
+	//BehaviorStatusChange(TEXT("InputDetection"));
+	//UE_LOG(LogTemp,Warning,TEXT("%d"),MotherIOInterface->Option1JustPressed);
+	if(MotherIOInterface->Option1JustPressed)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("PickedUp"));
+		//MotherIOInterface->MainPlayerState->BackSocket->ConstraintActor2 = Cast<AActor>(MotherIOInterface);
+	}
+	InteractObjectInputFlagRefresh();
+}
+
+void AGameEvent::BackStorageBehavior()
+{
+	if(MotherIOInterface->Option1JustPressed)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("BackStorageAttached"));
+	}
+	InteractObjectInputFlagRefresh();
+}
+
 //08 WaitInput
 
 

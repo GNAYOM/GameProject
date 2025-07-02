@@ -11,6 +11,7 @@
 #include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "SurviveGame/InteractManagerComponent/InteractManagerComponent.h"
 #include "SurviveGame/GameState/MainGameState.h"
 #include "SurviveGame/PlayerState/MainPlayerState.h"
@@ -25,7 +26,6 @@ class SURVIVEGAME_API ABaseCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ABaseCharacter();
-
 	//MovementControl callback
 	void MoveForward(const FInputActionValue& val);
 	void MoveBackward(const FInputActionValue& val);
@@ -44,7 +44,7 @@ protected:
 	virtual void BeginPlay() override;
 	
 	//InputMapping
-	UPROPERTY(EditAnywhere,Category="Mapping")
+	UPROPERTY(EditAnywhere,Category="InputMapping")
 	UInputMappingContext* CharacterInputMapping;
 	//InteractManagerComponent
 	UPROPERTY(EditAnywhere,Category="InteractManager")
@@ -123,12 +123,15 @@ protected:
 	AMainGameState* MainGameState;
 	AMainPlayerState* MainPlayerState;	
 public:
+	//PhysicsConstrain
+	UPROPERTY(EditAnywhere,Category="PhysicsConstrainSocket")
+	UStaticMeshComponent* BackSocket;
 	//CameraComponents
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category="Camera")
 	USpringArmComponent* CamSpringArm;
-	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Camera")
 	UCameraComponent* MainCamera;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category="Camera")
 	USphereComponent* CameraTrigger;
 	
 	// Called every frame

@@ -5,6 +5,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "SurviveGame/DataStructure/InteractObjectStructure/BehaviorStructure/FTableRowBehavior.h"
+#include "SurviveGame/GameCharacter/BaseCharacter/BaseCharacter.h"
 
 // Sets default values
 AInteractObject::AInteractObject()
@@ -28,6 +29,8 @@ void AInteractObject::BeginPlay()
 	Super::BeginPlay(); 
 	/*InteractObjectDataTable = LoadObject<UDataTable>(this
 		,TEXT("/Script/Engine.DataTable'/Game/GameContent/DataTable/InterractObject/InteractObjectDataTable.InteractObjectDataTable'"));*/
+	MainGameState = GetWorld()->GetAuthGameMode()->GetGameState<AMainGameState>();
+	MainPlayerState = GetWorld()->GetFirstPlayerController()->GetPlayerState<AMainPlayerState>(); 
 	UpdateBehaviorStatus(BehaviorStatus);
 	UpdateCurrentScript(CurrentScript);
 	UpdateInitialProperties(InitialProperties);
@@ -38,19 +41,19 @@ void AInteractObject::BeginPlay()
 void AInteractObject::AutoReleaseEvent()
 {
 	//延迟 spawn
-	AGameEvent* tmp_NewGameEvent =Cast<AGameEvent>(UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), AGameEvent::StaticClass(), FTransform::Identity,ESpawnActorCollisionHandlingMethod::Undefined,this)); 
+	/*AGameEvent* tmp_NewGameEvent =Cast<AGameEvent>(UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), AGameEvent::StaticClass(), FTransform::Identity,ESpawnActorCollisionHandlingMethod::Undefined,this)); 
 	tmp_NewGameEvent->EventID = EVENTIDAutoRelease;
 	tmp_NewGameEvent->MotherObject = this;
 	tmp_NewGameEvent->MotherIOInterface = Cast<AInteractObjectInterface>(this);
 	UGameplayStatics::FinishSpawningActor(tmp_NewGameEvent,FTransform::Identity);
-	tmp_NewGameEvent->AttachToActor(this,FAttachmentTransformRules::KeepWorldTransform);
+	tmp_NewGameEvent->AttachToActor(this,FAttachmentTransformRules::KeepWorldTransform);*/
 }
 
 
 void AInteractObject::ReleaseEventActively(int OptionSlotNum)
 {
 	//选项槽转事件ID
-	int tmp_InEventID;
+	/*int tmp_InEventID;
 	switch (OptionSlotNum)
 	{
 	case InputEnum::Option1: tmp_InEventID = EventID1;
@@ -68,14 +71,27 @@ void AInteractObject::ReleaseEventActively(int OptionSlotNum)
 	tmp_NewGameEvent->MotherObject = this;
 	tmp_NewGameEvent->MotherIOInterface = Cast<AInteractObjectInterface>(this);
 	UGameplayStatics::FinishSpawningActor(tmp_NewGameEvent,FTransform::Identity);
-	tmp_NewGameEvent->AttachToActor(this,FAttachmentTransformRules::KeepWorldTransform);
-	
+	tmp_NewGameEvent->AttachToActor(this,FAttachmentTransformRules::KeepWorldTransform);*/
+	//SetActorLocation(MainPlayerState->BackSocketCurrentLocation);
+	//AActor* MainCharacter = Cast<AActor>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0));
+	//this->AttachToComponent(this->GetComponentByClass<UStaticMeshComponent>(),FAttachmentTransformRules::KeepRelativeTransform);
+	/*A =Cast<UPhysicsConstraintComponent>( AddComponentByClass(UPhysicsConstraintComponent::StaticClass()
+		,true
+		,FTransform::Identity,true));
+	A->AttachToComponent(this->GetComponentByClass<USkeletalMeshComponent>(),FAttachmentTransformRules::KeepWorldTransform);
+	A->ConstraintActor1 = this;
+	A->ConstraintActor2 = MainCharacter;
+	A->SetAngularTwistLimit(ACM_Locked,0.f);
+	//A->SetAngularSwing1Limit(ACM_Locked,0);
+	A->SetAngularSwing2Limit(ACM_Locked,0);
+	FinishAddComponent(A,false,FTransform::Identity);
+	*/
 }
 
-void AInteractObject::UpdateBehaviorStatus(FString NewItemStatus)
-{
-	Super::UpdateBehaviorStatus(NewItemStatus);
-}
+//void AInteractObject::UpdateBehaviorStatus(FString NewItemStatus)
+//{
+//	Super::UpdateBehaviorStatus(NewItemStatus);
+//}
 
 
 void AInteractObject::OnCamBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -100,6 +116,7 @@ void AInteractObject::OnCamEndOverlapEnd(UPrimitiveComponent* OverlappedComponen
 void AInteractObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	//GetRootComponent()->SetWorldRotation(MainPlayerState->CurrentDirectionNormal.Rotation());
 	Option1JustPressed = false;
 	Option2JustPressed = false;
 	Option3JustPressed = false;

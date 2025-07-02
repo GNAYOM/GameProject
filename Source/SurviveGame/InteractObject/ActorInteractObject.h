@@ -3,21 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "GameFramework/Actor.h"
 #include "Components/BoxComponent.h"
 #include "SurviveGame/GameEvent/GameEvent.h"
-#include "SurviveGame/InteractObject/InteractObjectInterface.h"
+#include "ActorInteractObjectInterface.h"
+#include "Components/CapsuleComponent.h"
 #include "SurviveGame/Enum/InputEnum/InputEnum.h"
-#include "InteractObject.generated.h"
+#include "ActorInteractObject.generated.h"
 UCLASS()
-class SURVIVEGAME_API AInteractObject : public AInteractObjectInterface
+class SURVIVEGAME_API AActorInteractObject : public AActorInteractObjectInterface
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	AInteractObject();
-	
+	AActorInteractObject();
+	UPROPERTY(EditAnywhere)
+	USkeletalMeshComponent* MeshComponent;
 	//EventArray
 protected:
 	// Called when the game starts or when spawned
@@ -27,9 +29,10 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	UBoxComponent* InteractObjectVolume;
 	//BlockWhenCameraOverlap
+	UPROPERTY(EditAnywhere)
+	UCapsuleComponent* Collision;
 	UPROPERTY()
 	UPrimitiveComponent* PrimitiveComponent;
-
 	//Detected
 	UFUNCTION()
 	void OnCamBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -42,12 +45,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	//EventRelease
 	void AutoReleaseEvent();
-	void ReleaseEventActively(int OptionSlotNum);
+	void ReleaseEventActively(int Input);
 	UPROPERTY(EditAnywhere)
 	UPhysicsConstraintComponent* A;
 	//InteractObjectStatusChanged
 	//void UpdateBehaviorStatus(FString NewInteractObjectStatus) override;
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };

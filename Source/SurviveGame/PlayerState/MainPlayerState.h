@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
+#include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "SurviveGame/InteractObject/InteractObjectProperty.h"
 #include "MainPlayerState.generated.h"
 
@@ -20,4 +21,7 @@ public:
 	//PlayerStatus
 	FString WeightStatus;
 	float WeightLoad = 50;
+	FVector CurrentDirectionNormal;
+	FVector BackSocketCurrentLocation;
+	//UPhysicsConstraintComponent* BackSocket;
 };

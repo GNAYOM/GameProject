@@ -3,20 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "GameFramework/Actor.h"
 #include "SurviveGame/GameState/MainGameState.h"
 #include "SurviveGame/InteractObject/InteractObjectProperty.h"
 #include "SurviveGame/PlayerState/MainPlayerState.h"
-#include "InteractObjectInterface.generated.h"
+#include "ActorInteractObjectInterface.generated.h"
 
 UCLASS(Abstract)
-class SURVIVEGAME_API AInteractObjectInterface : public ACharacter
+class SURVIVEGAME_API AActorInteractObjectInterface : public AActor
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	AInteractObjectInterface();
+	AActorInteractObjectInterface();
 
 protected:
 	// Called when the game starts or when spawned
@@ -73,7 +73,6 @@ public:
 	bool Option3JustPressed = false;
 	bool Option4JustPressed = false;
 	// Called to bind functionality to input
-	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void UpdateBehaviorStatus(FString NewItemStatus);
 	void UpdateInitialProperties(FString NewScript);
 	void UpdateCurrentScript(FString NewScript);

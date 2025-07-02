@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "SurviveGame/InteractObject/InteractObjectInterface.h"
+#include "SurviveGame/InteractObject/ActorInteractObjectInterface.h"
 #include "stack"
 #include "GameEvent.generated.h"
 
@@ -49,7 +49,7 @@ public:
 	UPROPERTY()
 	AActor *MotherObject;
 	UPROPERTY()
-	AInteractObjectInterface *MotherIOInterface;
+	AActorInteractObjectInterface *MotherIOInterface;
 	UPROPERTY()
 	AGameEvent *MotherGameEvent;
 	//ConditionRegister
@@ -98,14 +98,16 @@ public:
 	void MainEventSelector(int ID);
 	//ConditionRegisterInitialize
 	void ConditionRegisterInitialize();
+	//InteractObjectInputFlagRefresh
+	void InteractObjectInputFlagRefresh();
 	//Events
 	//01 Test
 		//IOID 0001
 		void Test00001();//EventID 00001
 		void Test00002();//EventID 00002
 		void Test00003();//EventID 00003
-	//02 ScriptExecutor
-		void ScriptExecutor();//EventID 200000000
+	//002 ScriptExecutor
+		void ScriptExecutor();//EventID 002000000
 		void ScriptCompiler(FString Path);
 		FString GetPCInstruction();
 		FString GetPCParam(int ParamIndex);
@@ -118,24 +120,27 @@ public:
 		FString ScriptPath;
 		int ScriptExecutorPC=0;
 		//int ScriptExecutorIR;
-	//03 BehaviorStatusChange
+	//003 BehaviorStatusChange
 		void BehaviorStatusChange(FString NewStatus);
-	//04 EventRelease
+	//004 EventRelease
 		void GameEventSubEventRelease(int SubEventID,AGameEvent* FatherObject);
-	//05 InputDetection
-		void Option1Detection();//ID00001
-		void Option2Detection();//ID00002
-		void Option3Detection();//ID00003
-		void Option4Detection();//ID00004
-	//06 ConditionJudgement
+	//005 InputDetection
+		void Option1Detection();//ID000001
+		void Option2Detection();//ID000002
+		void Option3Detection();//ID000003
+		void Option4Detection();//ID000004
+	//006 ConditionJudgement
 		void JudgeAsConditionGroup(bool &A,bool &B,AndConditionGroup &AND);
 		void JudgeAsConditionGroup(bool &A,bool &B,OrConditionGroup &OR);
 		void AndGroupGetResult(AndConditionGroup &AndConditionGroup);
 		void OrGroupGetResult(OrConditionGroup &OrConditionGroup);
 		void UpdateConditionGroupsResult();
-	//07 ConditionalConstruct
-	//08 WaitInput
-	//09 CollectableItem
+	//007 ConditionalConstruct
+	//008 WaitInput
+	//009 CollectableItem
+		void CollectableBehavior();//EventID 009000000
+	//010 BackStorage
+		void BackStorageBehavior();//EventID 010000000
 	// AffectCharacter
 	// AffectFields
 };

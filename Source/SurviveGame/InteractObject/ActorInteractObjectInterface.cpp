@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "InteractObjectInterface.h"
+#include "ActorInteractObjectInterface.h"
 #include "SurviveGame/DataStructure/InteractObjectStructure/BehaviorStructure/FTableRowBehavior.h"
 #include "SurviveGame/DataStructure/InteractObjectStructure/ScriptStructure/FTableRowScript.h"
 #include "SurviveGame/DataStructure/InteractObjectStructure/PropertiesStructure/FTableRowProperty.h"
 // Sets default values
-AInteractObjectInterface::AInteractObjectInterface()
+AActorInteractObjectInterface::AActorInteractObjectInterface()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -14,27 +14,22 @@ AInteractObjectInterface::AInteractObjectInterface()
 }
 
 // Called when the game starts or when spawned
-void AInteractObjectInterface::BeginPlay()
+void AActorInteractObjectInterface::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void AInteractObjectInterface::Tick(float DeltaTime)
+void AActorInteractObjectInterface::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
 // Called to bind functionality to input
-void AInteractObjectInterface::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
 
 
-void AInteractObjectInterface::UpdateBehaviorStatus(FString NewItemStatus)
+void AActorInteractObjectInterface::UpdateBehaviorStatus(FString NewItemStatus)
 {
 	if(BehaviorDataTable)
 	{
@@ -59,22 +54,22 @@ void AInteractObjectInterface::UpdateBehaviorStatus(FString NewItemStatus)
 	}
 }
 
-void AInteractObjectInterface::UpdateInitialProperties(FString NewProperties)
+void AActorInteractObjectInterface::UpdateInitialProperties(FString NewProperties)
 {
 	if(PropertiesDataTable)
 	{
 		this->InitialProperties = NewProperties;
-		FTableRowProperty* PropertyData =
+		FTableRowProperty* ScriptData =
 			PropertiesDataTable->FindRow<FTableRowProperty>(FName(InitialProperties),TEXT(""));
-		if(PropertyData)
+		if(ScriptData)
 		{
-			Property.Weight = PropertyData->Weight;
+			Property.Weight = ScriptData->Weight;
 			Weight = Property.Weight;
 		}
 	}
 }
 
-void AInteractObjectInterface::UpdateCurrentScript(FString NewScript)
+void AActorInteractObjectInterface::UpdateCurrentScript(FString NewScript)
 {
 	if(ScriptDataTable)
 	{
@@ -97,8 +92,9 @@ void AInteractObjectInterface::UpdateCurrentScript(FString NewScript)
 		FFileHelper::LoadFileToString(Script,*FullScriptPath);
 		UE_LOG(LogTemp,Warning,TEXT("%d"),*Script);
 	}
-
 }
+
+
 
 
 

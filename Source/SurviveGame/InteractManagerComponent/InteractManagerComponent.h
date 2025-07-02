@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
 #include "Components/BoxComponent.h"
-#include "SurviveGame/InteractObject/InteractObject.h"
+#include "SurviveGame/InteractObject/ActorInteractObject.h"
 #include "InteractManagerComponent.generated.h"
 
 
@@ -33,16 +33,16 @@ protected:
 	//InteractObjectPointerArrary
 	//Store & Sort by distance
 	UPROPERTY()
-	TArray<AInteractObject*> InRangeInteractObjects;
+	TArray<AActorInteractObject*> InRangeInteractObjects;
 	UPROPERTY()
-	TArray<AInteractObject*> InteractObjectsSorted;
+	TArray<AActorInteractObject*> InteractObjectsSorted;
 	UPROPERTY()
-	TArray<AInteractObject*> tmp_InteractObjectsSorted;
+	TArray<AActorInteractObject*> tmp_InteractObjectsSorted;
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
-	void InteractObjectOptionSelected(int OptionSlotNum);
+	void InteractObjectInputDetected(int Input);
 	UFUNCTION()
 	void OnInteractObjectBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);

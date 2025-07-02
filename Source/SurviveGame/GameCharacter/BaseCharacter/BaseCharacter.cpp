@@ -14,6 +14,8 @@ ABaseCharacter::ABaseCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
+
+
 	
 	CamSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraComponent"));
 	MainCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("MainCamera"));
@@ -24,6 +26,9 @@ ABaseCharacter::ABaseCharacter()
 	MainCamera->SetupAttachment(CamSpringArm,USpringArmComponent::SocketName);
 	CameraTrigger->SetupAttachment(MainCamera);
 	
+	BackSocket = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BackSocket"));
+	BackSocket->SetupAttachment(GetMesh());
+
 	CharacterInputMapping = CreateDefaultSubobject<UInputMappingContext>(TEXT("InputMapping"));
 	InteractObjectDetector = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractObjectDetector"));
 	InteractObjectDetector -> SetupAttachment(GetMesh());
@@ -72,26 +77,26 @@ void ABaseCharacter::CameraPitchRotate(const FInputActionValue& val)
 //OptionSelected callback
 void ABaseCharacter::Option1Selected()
 {
-	UE_LOG(LogTemp,Warning,TEXT("Option1Selected"));
-	InteractManagerComponent->InteractObjectOptionSelected(InputEnum::Option1);
+	//UE_LOG(LogTemp,Warning,TEXT("Option1Selected"));
+	InteractManagerComponent->InteractObjectInputDetected(InputEnum::Option1);
 }
 
 void ABaseCharacter::Option2Selected()
 {
-	UE_LOG(LogTemp,Warning,TEXT("Option2Selected"));
-	InteractManagerComponent->InteractObjectOptionSelected(InputEnum::Option2);
+	//UE_LOG(LogTemp,Warning,TEXT("Option2Selected"));
+	InteractManagerComponent->InteractObjectInputDetected(InputEnum::Option2);
 }
 
 void ABaseCharacter::Option3Selected()
 {
-	UE_LOG(LogTemp,Warning,TEXT("Option3Selected"));
-	InteractManagerComponent->InteractObjectOptionSelected(InputEnum::Option3);
+	//UE_LOG(LogTemp,Warning,TEXT("Option3Selected"));
+	InteractManagerComponent->InteractObjectInputDetected(InputEnum::Option3);
 }
 
 void ABaseCharacter::Option4Selected()
 {
-	UE_LOG(LogTemp,Warning,TEXT("Option4Selected"));
-	InteractManagerComponent->InteractObjectOptionSelected(InputEnum::Option4);
+	//UE_LOG(LogTemp,Warning,TEXT("Option4Selected"));
+	InteractManagerComponent->InteractObjectInputDetected(InputEnum::Option4);
 }
 
 // Called when the game starts or when spawned
@@ -152,6 +157,11 @@ void ABaseCharacter::Tick(float DeltaTime)
 			//UE_LOG(LogTemp, Warning, TEXT("%f"), FMath::Lerp(0,0.2,GetCharacterMovement()->Velocity.Length()/200.0f))
 			GetMesh()->SetWorldRotation(CurrentDirectionNormal.Rotation());
 		}
+		MainPlayerState->CurrentDirectionNormal = CurrentDirectionNormal;		
+	}
+	//更新Player状态
+	{
+		MainPlayerState->BackSocketCurrentLocation = BackSocket->GetComponentLocation();
 	}
 }
 
