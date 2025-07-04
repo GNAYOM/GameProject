@@ -23,5 +23,6 @@ public:
 	float WeightLoad = 50;
 	FVector CurrentDirectionNormal;
 	FVector BackSocketCurrentLocation;
-	//UPhysicsConstraintComponent* BackSocket;
+	UPROPERTY()
+	UStaticMeshComponent* BackSocket;
 };

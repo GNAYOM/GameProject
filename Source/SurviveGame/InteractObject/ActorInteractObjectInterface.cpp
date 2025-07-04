@@ -94,6 +94,35 @@ void AActorInteractObjectInterface::UpdateCurrentScript(FString NewScript)
 	}
 }
 
+void AActorInteractObjectInterface::AutoReleaseEvent()
+{
+}
+
+void AActorInteractObjectInterface::ReleaseEventActively(int Input)
+{
+}
+
+FVector AActorInteractObjectInterface::GetPlayerBackSocketPosition()
+{
+	return FVector(0,0,0);
+}
+
+FRotator AActorInteractObjectInterface::GetPlayerDirectionRotator()
+{
+	return FRotator(0,0,0);
+}
+
+UStaticMeshComponent* AActorInteractObjectInterface::GetPlayerBackSocketComponent()
+{
+	UStaticMeshComponent* Default = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Default"));
+	return Default;
+}
+
+void AActorInteractObjectInterface::LogHello()
+{
+	UE_LOG(LogTemp,Warning,TEXT("Hello  ::)"));
+}
+
 
 
 

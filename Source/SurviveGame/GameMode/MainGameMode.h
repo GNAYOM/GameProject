@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "SurviveGame/GameState/MainGameState.h"
 #include "MainGameMode.generated.h"
 
 /**

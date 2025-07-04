@@ -140,7 +140,7 @@ public:
 	//009 CollectableItem
 		void CollectableBehavior();//EventID 009000000
 	//010 BackStorage
-		void BackStorageBehavior();//EventID 010000000
+		void EquipableBackStorageBehavior();//EventID 010000000
 	// AffectCharacter
 	// AffectFields
 };

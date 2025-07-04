@@ -105,6 +105,7 @@ void ABaseCharacter::BeginPlay()
 	Super::BeginPlay();
 	MainGameState = GetWorld()->GetAuthGameMode()->GetGameState<AMainGameState>();
 	MainPlayerState = GetWorld()->GetFirstPlayerController()->GetPlayerState<AMainPlayerState>(); 
+	MainPlayerState -> BackSocket = BackSocket;
 	WeightAffectedMovementDataTable = LoadObject<UDataTable>(this
 		,TEXT("/Script/Engine.DataTable'/Game/GameContent/DataTable/Character/BaseCharacter/WeightSystem/WeightAffectedMovementDataTable.WeightAffectedMovementDataTable'"));
 	WeightChange();

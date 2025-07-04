@@ -46,7 +46,7 @@ void UInteractManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	tmp_InteractObjectsSorted = InRangeInteractObjects;
 	float tmp_CurrentDistanceA = 0.f;
 	float tmp_CurrentDistanceB = 0.f;
-	AActorInteractObject* tmp_PosSwap = NULL;
+	AActorInteractObjectInterface* tmp_PosSwap = NULL;
 	//In range InteractObject Sort by distance
 	for(int i = 0; i < tmp_InteractObjectsSorted.Num(); i++)
 	{
@@ -65,7 +65,7 @@ void UInteractManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 			}
 		}
 	}
-	for(int i =0;AActorInteractObject* IO : tmp_InteractObjectsSorted)
+	for(int i =0;AActorInteractObjectInterface* IO : tmp_InteractObjectsSorted)
 	{
 		
 		FString IOName = IO -> BehaviorStatus;
@@ -93,7 +93,7 @@ void UInteractManagerComponent::OnInteractObjectBeginOverlap(UPrimitiveComponent
 {
 	FString IOName = OtherActor->GetName();
 	UE_LOG(LogTemp, Warning, TEXT("BeginOverlap:%s"), *IOName);
-	AActorInteractObject* InsertNewInteractObject =  Cast<AActorInteractObject>(OtherActor);
+	AActorInteractObjectInterface* InsertNewInteractObject =  Cast<AActorInteractObject>(OtherActor);
 	InRangeInteractObjects.Add(InsertNewInteractObject);
 	//InsertNewInteractObject->ReleaseEventActive(1);
 }
@@ -103,7 +103,7 @@ void UInteractManagerComponent::OnInteractObjectEndOverlapEnd(UPrimitiveComponen
 {
 	FString IOName = OtherActor->GetName();
 	UE_LOG(LogTemp,Warning,TEXT("EndOverlap111:%s"),*IOName);
-	AActorInteractObject* InsertNewInteractObject =  Cast<AActorInteractObject>(OtherActor);
+	AActorInteractObjectInterface* InsertNewInteractObject =  Cast<AActorInteractObject>(OtherActor);
 	InRangeInteractObjects.Remove(InsertNewInteractObject);
 }
 

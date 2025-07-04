@@ -4,10 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "SurviveGame/GameState/MainGameState.h"
 #include "SurviveGame/InteractObject/InteractObjectProperty.h"
-#include "SurviveGame/PlayerState/MainPlayerState.h"
 #include "ActorInteractObjectInterface.generated.h"
+
 
 UCLASS(Abstract)
 class SURVIVEGAME_API AActorInteractObjectInterface : public AActor
@@ -21,8 +20,10 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
+	
+public:
+	UPROPERTY()
+	UPrimitiveComponent* PrimitiveComponent;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	UPROPERTY(EditAnywhere)
@@ -60,9 +61,6 @@ public:
 	int EventID4;
 	UPROPERTY(EditAnywhere)
 	int EVENTIDAutoRelease;
-	//GameState
-	AMainGameState* MainGameState;
-	AMainPlayerState* MainPlayerState;	
 	//Properties
 	InteractObjectProperty Property;
 	UPROPERTY(EditAnywhere)
@@ -76,4 +74,17 @@ public:
 	void UpdateBehaviorStatus(FString NewItemStatus);
 	void UpdateInitialProperties(FString NewScript);
 	void UpdateCurrentScript(FString NewScript);
+	virtual void AutoReleaseEvent() ;
+	virtual void ReleaseEventActively(int Input) ;
+	virtual FVector GetPlayerBackSocketPosition();
+	virtual FRotator GetPlayerDirectionRotator();
+	virtual UStaticMeshComponent* GetPlayerBackSocketComponent();
+	//Test
+	void LogHello();
+	
+};
+
+struct ActorInteractObjectSystem
+{
+	TArray<AActorInteractObjectInterface*> BackStorage; 
 };

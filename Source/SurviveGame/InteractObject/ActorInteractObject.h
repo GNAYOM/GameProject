@@ -9,7 +9,11 @@
 #include "ActorInteractObjectInterface.h"
 #include "Components/CapsuleComponent.h"
 #include "SurviveGame/Enum/InputEnum/InputEnum.h"
+#include "SurviveGame/GameState/MainGameState.h"
+#include "SurviveGame/PlayerState/MainPlayerState.h"
+#include "SurviveGame/GameState/InteractObjectSystem.h"
 #include "ActorInteractObject.generated.h"
+
 UCLASS()
 class SURVIVEGAME_API AActorInteractObject : public AActorInteractObjectInterface
 {
@@ -20,7 +24,14 @@ public:
 	AActorInteractObject();
 	UPROPERTY(EditAnywhere)
 	USkeletalMeshComponent* MeshComponent;
-	//EventArray
+	//InteractObjectSystem
+	InteractObjectSystem* CurrentInteractObjectSystem;
+	//GameState
+	UPROPERTY()
+	AMainGameState* MainGameState;
+	UPROPERTY()
+	AMainPlayerState* MainPlayerState;
+	InteractObjectSystem* CurrentSystem;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -31,8 +42,7 @@ protected:
 	//BlockWhenCameraOverlap
 	UPROPERTY(EditAnywhere)
 	UCapsuleComponent* Collision;
-	UPROPERTY()
-	UPrimitiveComponent* PrimitiveComponent;
+	
 	//Detected
 	UFUNCTION()
 	void OnCamBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -44,12 +54,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	//EventRelease
-	void AutoReleaseEvent();
-	void ReleaseEventActively(int Input);
+	void AutoReleaseEvent() override;
+	void ReleaseEventActively(int Input) override;
 	UPROPERTY(EditAnywhere)
 	UPhysicsConstraintComponent* A;
+	//GetPlayerState
+	FVector GetPlayerBackSocketPosition() override;
+	FRotator GetPlayerDirectionRotator() override;
+	UStaticMeshComponent* GetPlayerBackSocketComponent() override;
 	//InteractObjectStatusChanged
 	//void UpdateBehaviorStatus(FString NewInteractObjectStatus) override;
 	// Called to bind functionality to input
-
+	//Test
+	void LogHello();
 };

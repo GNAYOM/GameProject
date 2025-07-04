@@ -39,7 +39,7 @@ void AGameEvent::MainEventSelector(int ID)
 		break;
 	case 9000000 :CurrentEvent_0_Param = &AGameEvent::CollectableBehavior;
 		break;
-	case 10000000:CurrentEvent_0_Param = &AGameEvent::BackStorageBehavior;
+	case 10000000:CurrentEvent_0_Param = &AGameEvent::EquipableBackStorageBehavior;
 	}
 
 }
@@ -567,11 +567,19 @@ void AGameEvent::CollectableBehavior()
 	InteractObjectInputFlagRefresh();
 }
 
-void AGameEvent::BackStorageBehavior()
+void AGameEvent::EquipableBackStorageBehavior()
 {
 	if(MotherIOInterface->Option1JustPressed)
 	{
 		UE_LOG(LogTemp,Warning,TEXT("BackStorageAttached"));
+		MotherIOInterface->SetActorLocation(MotherIOInterface->GetPlayerBackSocketPosition());
+		MotherIOInterface->SetActorRotation(MotherIOInterface->GetPlayerDirectionRotator());
+		MotherIOInterface->PrimitiveComponent->SetSimulatePhysics(false);
+		MotherIOInterface->AttachToComponent(MotherIOInterface->GetPlayerBackSocketComponent(),FAttachmentTransformRules::KeepWorldTransform);
+		
+		BehaviorStatusChange(FString("EquippedBackStorage"));
+		
+		Destroy();
 	}
 	InteractObjectInputFlagRefresh();
 }

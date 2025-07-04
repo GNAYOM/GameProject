@@ -41,10 +41,16 @@ void AActorInteractObject::BeginPlay()
 	if(EVENTIDAutoRelease != 0)
 		AutoReleaseEvent();
 	PrimitiveComponent -> SetSimulatePhysics(true);
-	PrimitiveComponent -> SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	//PrimitiveComponent -> SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	PrimitiveComponent -> SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
+	//PrimitiveComponent -> SetCollisionProfileName(FName(""));
 	PrimitiveComponent -> OnComponentBeginOverlap.AddDynamic(this,&AActorInteractObject::OnCamBeginOverlap);
 	PrimitiveComponent -> OnComponentEndOverlap.AddDynamic(this,&AActorInteractObject::OnCamEndOverlapEnd);
+	//PrimaryInteractObjectSystem
+	CurrentInteractObjectSystem =  MainGameState->CreateInteractObjectSystem(this);
+	UE_LOG(LogTemp,Warning,TEXT("%d"),CurrentInteractObjectSystem->ConnectionMatrix[0][0]);
+	UE_LOG(LogTemp,Warning,TEXT("%d"),CurrentInteractObjectSystem->TotalInteractObjects.Num());
+	CurrentInteractObjectSystem->TotalInteractObjects[CurrentInteractObjectSystem->TotalInteractObjects.Find(this)]->LogHello();
 }
 
 void AActorInteractObject::AutoReleaseEvent()
@@ -78,14 +84,14 @@ void AActorInteractObject::ReleaseEventActively(int Input)
 	AGameEvent* tmp_NewGameEvent =Cast<AGameEvent>(UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), AGameEvent::StaticClass(), FTransform::Identity,ESpawnActorCollisionHandlingMethod::Undefined,this)); 
 	tmp_NewGameEvent->EventID = tmp_InEventID;
 	tmp_NewGameEvent->MotherObject = this;
-	tmp_NewGameEvent->MotherIOInterface = Cast<AActorInteractObjectInterface>(this);
+	tmp_NewGameEvent->MotherIOInterface = this;
 	UGameplayStatics::FinishSpawningActor(tmp_NewGameEvent,FTransform::Identity);
 	tmp_NewGameEvent->AttachToActor(this,FAttachmentTransformRules::KeepWorldTransform);
-	Cast<UPrimitiveComponent>(GetRootComponent())->SetSimulatePhysics(false);
+	//Cast<UPrimitiveComponent>(GetRootComponent())->SetSimulatePhysics(false);
 	//SetActorLocation(MainPlayerState->BackSocketCurrentLocation);
 	//SetActorRotation(MainPlayerState->CurrentDirectionNormal.Rotation());
-	UE_LOG(LogTemp,Warning,TEXT("x %f,y %f,z %f"),MainPlayerState->BackSocketCurrentLocation.X,MainPlayerState->BackSocketCurrentLocation.Y,MainPlayerState->BackSocketCurrentLocation.Z);
-	AActor* MainCharacter = Cast<AActor>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0));
+	//UE_LOG(LogTemp,Warning,TEXT("x %f,y %f,z %f"),MainPlayerState->BackSocketCurrentLocation.X,MainPlayerState->BackSocketCurrentLocation.Y,MainPlayerState->BackSocketCurrentLocation.Z);
+	//AActor* MainCharacter = Cast<AActor>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0));
 	//AttachToComponent(MainCharacter->FindComponentByClass<UStaticMeshComponent>(),FAttachmentTransformRules::KeepWorldTransform);
 	//UPhysicsConstraintComponent* TMP = MainCharacter->FindComponentByClass<UPhysicsConstraintComponent>();
 	//PrimitiveComponent -> SetSimulatePhysics(false);
@@ -104,11 +110,31 @@ void AActorInteractObject::ReleaseEventActively(int Input)
 	Aa->InitComponentConstraint();
 	FinishAddComponent(Aa,true,GetTransform());*/
 	//FinishAddComponent(A,false,FTransform::Identity);
-	A->ConstraintActor2 = this;
+	/*A->ConstraintActor2 = this;
 	A->InitComponentConstraint();
-	A->UpdateConstraintFrames();
+	A->UpdateConstraintFrames();*/
 
 	
+}
+
+FVector AActorInteractObject::GetPlayerBackSocketPosition()
+{
+	return MainPlayerState->BackSocketCurrentLocation;
+}
+
+FRotator AActorInteractObject::GetPlayerDirectionRotator()
+{
+	return MainPlayerState->CurrentDirectionNormal.Rotation();
+}
+
+UStaticMeshComponent* AActorInteractObject::GetPlayerBackSocketComponent()
+{
+	return MainPlayerState->BackSocket;
+}
+
+void AActorInteractObject::LogHello()
+{
+	UE_LOG(LogTemp,Warning,TEXT("Hello:)"));
 }
 
 //void AInteractObject::UpdateBehaviorStatus(FString NewItemStatus)
@@ -120,7 +146,7 @@ void AActorInteractObject::ReleaseEventActively(int Input)
 void AActorInteractObject::OnCamBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("BeginOverLap"));
+	UE_LOG(LogTemp, Warning, TEXT("BeginOverLap CollisionObjectType: %d" ),OtherComp->GetCollisionObjectType());
 	
 	PrimitiveComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	PrimitiveComponent->SetCollisionResponseToChannel(ECC_Camera,ECR_Block);

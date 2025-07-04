@@ -6,6 +6,7 @@
 #include "Components/SceneComponent.h"
 #include "Components/BoxComponent.h"
 #include "SurviveGame/InteractObject/ActorInteractObject.h"
+#include "SurviveGame/InteractObject/ActorInteractObjectInterface.h"
 #include "InteractManagerComponent.generated.h"
 
 
@@ -33,11 +34,11 @@ protected:
 	//InteractObjectPointerArrary
 	//Store & Sort by distance
 	UPROPERTY()
-	TArray<AActorInteractObject*> InRangeInteractObjects;
+	TArray<AActorInteractObjectInterface*> InRangeInteractObjects;
 	UPROPERTY()
-	TArray<AActorInteractObject*> InteractObjectsSorted;
+	TArray<AActorInteractObjectInterface*> InteractObjectsSorted;
 	UPROPERTY()
-	TArray<AActorInteractObject*> tmp_InteractObjectsSorted;
+	TArray<AActorInteractObjectInterface*> tmp_InteractObjectsSorted;
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
