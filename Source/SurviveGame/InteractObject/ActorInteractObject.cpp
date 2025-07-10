@@ -48,9 +48,12 @@ void AActorInteractObject::BeginPlay()
 	PrimitiveComponent -> OnComponentEndOverlap.AddDynamic(this,&AActorInteractObject::OnCamEndOverlapEnd);
 	//PrimaryInteractObjectSystem
 	CurrentInteractObjectSystem =  MainGameState->CreateInteractObjectSystem(this);
-	UE_LOG(LogTemp,Warning,TEXT("%d"),CurrentInteractObjectSystem->ConnectionMatrix[0][0]);
-	UE_LOG(LogTemp,Warning,TEXT("%d"),CurrentInteractObjectSystem->TotalInteractObjects.Num());
-	CurrentInteractObjectSystem->TotalInteractObjects[CurrentInteractObjectSystem->TotalInteractObjects.Find(this)]->LogHello();
+	//MainGameState->InteractObjectSystemAddInteractObject(CurrentInteractObjectSystem,this);
+	//UE_LOG(LogTemp,Warning,TEXT("%d"),CurrentInteractObjectSystem->ConnectionMatrix[1][1]);
+	//UE_LOG(LogTemp,Warning,TEXT("%d"),CurrentInteractObjectSystem->TotalInteractObjects.Num());
+
+	//UE_LOG(LogTemp,Warning,TEXT("%d"),	MainGameState->InteractObjectSystems[MainGameState->InteractObjectSystems.Find(CurrentInteractObjectSystem)]->ConnectionMatrix[1][1]);
+	//UE_LOG(LogTemp,Warning,TEXT("%d"),	MainGameState->InteractObjectSystems[MainGameState->InteractObjectSystems.Find(CurrentInteractObjectSystem)]->TotalInteractObjects.Num());
 }
 
 void AActorInteractObject::AutoReleaseEvent()
@@ -132,6 +135,54 @@ UStaticMeshComponent* AActorInteractObject::GetPlayerBackSocketComponent()
 	return MainPlayerState->BackSocket;
 }
 
+void AActorInteractObject::SetPlayerPossessedInteractObjectSystem()
+{
+	UE_LOG(LogTemp,Warning,TEXT("BackStorageAttached"));
+	SetActorLocation(this->GetPlayerBackSocketPosition());
+	SetActorRotation(this->GetPlayerDirectionRotator());
+	PrimitiveComponent->SetSimulatePhysics(false);
+	AttachToComponent(this->GetPlayerBackSocketComponent(),FAttachmentTransformRules::KeepWorldTransform);
+	MainPlayerState->PossessedSystem = CurrentInteractObjectSystem;
+	MainPlayerState->PossessedSystem->IsPossessedByPlayer = true;
+}
+
+void AActorInteractObject::MergeWithPlayerPossessedInteractObjectSystem()
+{
+	//CurrentInteractObjectSystem = MainPlayerState->PossessedSystem;
+	//MainGameState->InteractObjectSystemAddInteractObject(CurrentInteractObjectSystem,this);//Test,Not really merged
+	int Tmp_BackStorageIndex = 0;
+	int Tmp_ConnectObject2Index = 0;
+	UE_LOG(LogTemp,Warning,TEXT("BackStorageAttached"));
+	SetActorLocation(this->GetPlayerBackSocketPosition());
+	SetActorRotation(this->GetPlayerDirectionRotator());
+	PrimitiveComponent->SetSimulatePhysics(false);
+	AttachToComponent(this->GetPlayerBackSocketComponent(),FAttachmentTransformRules::KeepWorldTransform);
+	for(int i = 0;AActorInteractObjectInterface* I: MainPlayerState->PossessedSystem->TotalInteractObjects)
+	{
+		if(I->BehaviorStatus.Equals("EquippedBackStorage"))
+			Tmp_BackStorageIndex = i;
+		i++;
+	}
+	for(int i = 0;AActorInteractObjectInterface* I: CurrentInteractObjectSystem->TotalInteractObjects)
+	{
+		if(I == this)
+			Tmp_BackStorageIndex = i;
+		i++;
+	}	
+	MainGameState->MergeInteractObjectSystem(MainPlayerState->PossessedSystem,CurrentInteractObjectSystem
+		,Tmp_BackStorageIndex,Tmp_ConnectObject2Index);
+}
+
+void AActorInteractObject::SeperateFromPlayerPossessedInteractObjectSystem()
+{
+	
+}
+
+void AActorInteractObject::SetNewInteractObjectSystem()
+{
+	CurrentInteractObjectSystem = CurrentInteractObjectSystem -> NewInteractObjectSystem;
+}
+
 void AActorInteractObject::LogHello()
 {
 	UE_LOG(LogTemp,Warning,TEXT("Hello:)"));
@@ -165,6 +216,7 @@ void AActorInteractObject::OnCamEndOverlapEnd(UPrimitiveComponent* OverlappedCom
 void AActorInteractObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	//InteractObjectVolume->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	//GetRootComponent()->SetWorldRotation(MainPlayerState->CurrentDirectionNormal.Rotation());
 	//Option1JustPressed = false;
 	//Option2JustPressed = false;

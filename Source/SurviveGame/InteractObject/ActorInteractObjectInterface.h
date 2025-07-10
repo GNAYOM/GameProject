@@ -43,6 +43,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	UDataTable* ScriptDataTable;
 	//InteractOption
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	bool IsSelectedByPlayer;
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	FText	Option1;
 	UPROPERTY(EditAnywhere)
@@ -61,6 +63,9 @@ public:
 	int EventID4;
 	UPROPERTY(EditAnywhere)
 	int EVENTIDAutoRelease;
+	//Socket
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* Socket;//TestSocket
 	//Properties
 	InteractObjectProperty Property;
 	UPROPERTY(EditAnywhere)
@@ -76,15 +81,17 @@ public:
 	void UpdateCurrentScript(FString NewScript);
 	virtual void AutoReleaseEvent() ;
 	virtual void ReleaseEventActively(int Input) ;
+	//Get/Set Status
 	virtual FVector GetPlayerBackSocketPosition();
 	virtual FRotator GetPlayerDirectionRotator();
 	virtual UStaticMeshComponent* GetPlayerBackSocketComponent();
+	//Set InteractObjectSystem
+	virtual void SetPlayerPossessedInteractObjectSystem();
+	virtual void MergeWithPlayerPossessedInteractObjectSystem();
+	virtual void SeperateFromPlayerPossessedInteractObjectSystem();
+	virtual void SetNewInteractObjectSystem();
+	virtual void SetConnectionWithInteractObject();
 	//Test
-	void LogHello();
+	virtual void LogHello();
 	
-};
-
-struct ActorInteractObjectSystem
-{
-	TArray<AActorInteractObjectInterface*> BackStorage; 
 };

@@ -7,6 +7,8 @@
 #include "Components/BoxComponent.h"
 #include "SurviveGame/InteractObject/ActorInteractObject.h"
 #include "SurviveGame/InteractObject/ActorInteractObjectInterface.h"
+#include "SurviveGame/PlayerState/MainPlayerState.h"
+#include "SurviveGame/Enum/InteractManagerComponentStatusEnum/InteractManagerComponentStatusEnum.h"
 #include "InteractManagerComponent.generated.h"
 
 
@@ -25,6 +27,8 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	//PlayerStatus
+	AMainPlayerState* MainPlayerState;
 	//RootSkeletalMesh
 	UPROPERTY()
 	USkeletalMeshComponent* RootSkeletalMesh;
@@ -39,11 +43,19 @@ protected:
 	TArray<AActorInteractObjectInterface*> InteractObjectsSorted;
 	UPROPERTY()
 	TArray<AActorInteractObjectInterface*> tmp_InteractObjectsSorted;
+	//Selected InteractObject
+	UPROPERTY()
+	AActorInteractObjectInterface* LastSelectedTargetInteractObject;
+	UPROPERTY()
+	AActorInteractObjectInterface* SelectedTargetInteractObject;
+	void InteractObjectSelection();
+	void SelectInteractObjectByRange();
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	void InteractObjectInputDetected(int Input);
+	
 	UFUNCTION()
 	void OnInteractObjectBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);

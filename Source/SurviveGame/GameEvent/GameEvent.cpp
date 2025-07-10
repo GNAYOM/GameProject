@@ -5,6 +5,7 @@
 
 #include "ComponentUtils.h"
 #include "Kismet/GameplayStatics.h"
+#include "SurviveGame/GameState/InteractObjectSystem.h"
 
 // Sets default values
 AGameEvent::AGameEvent()
@@ -559,10 +560,16 @@ void AGameEvent::CollectableBehavior()
 	//UE_LOG(LogTemp,Warning,TEXT("CollectableItemBehaviorStart"));
 	//BehaviorStatusChange(TEXT("InputDetection"));
 	//UE_LOG(LogTemp,Warning,TEXT("%d"),MotherIOInterface->Option1JustPressed);
-	if(MotherIOInterface->Option1JustPressed)
+	if(MotherIOInterface->Option1JustPressed && IsConnected == false)
 	{
+		MotherIOInterface->MergeWithPlayerPossessedInteractObjectSystem();
 		UE_LOG(LogTemp,Warning,TEXT("PickedUp"));
-		//MotherIOInterface->MainPlayerState->BackSocket->ConstraintActor2 = Cast<AActor>(MotherIOInterface);
+		IsConnected = true;
+	}
+	if(MotherIOInterface->Option2JustPressed && IsConnected == true)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("Disconnect"))
+		IsConnected = false;
 	}
 	InteractObjectInputFlagRefresh();
 }
@@ -571,14 +578,8 @@ void AGameEvent::EquipableBackStorageBehavior()
 {
 	if(MotherIOInterface->Option1JustPressed)
 	{
-		UE_LOG(LogTemp,Warning,TEXT("BackStorageAttached"));
-		MotherIOInterface->SetActorLocation(MotherIOInterface->GetPlayerBackSocketPosition());
-		MotherIOInterface->SetActorRotation(MotherIOInterface->GetPlayerDirectionRotator());
-		MotherIOInterface->PrimitiveComponent->SetSimulatePhysics(false);
-		MotherIOInterface->AttachToComponent(MotherIOInterface->GetPlayerBackSocketComponent(),FAttachmentTransformRules::KeepWorldTransform);
-		
+		MotherIOInterface->SetPlayerPossessedInteractObjectSystem();
 		BehaviorStatusChange(FString("EquippedBackStorage"));
-		
 		Destroy();
 	}
 	InteractObjectInputFlagRefresh();

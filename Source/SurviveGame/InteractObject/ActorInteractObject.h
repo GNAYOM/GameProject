@@ -31,7 +31,6 @@ public:
 	AMainGameState* MainGameState;
 	UPROPERTY()
 	AMainPlayerState* MainPlayerState;
-	InteractObjectSystem* CurrentSystem;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -58,13 +57,18 @@ public:
 	void ReleaseEventActively(int Input) override;
 	UPROPERTY(EditAnywhere)
 	UPhysicsConstraintComponent* A;
-	//GetPlayerState
+	//Get/Set PlayerState
 	FVector GetPlayerBackSocketPosition() override;
 	FRotator GetPlayerDirectionRotator() override;
 	UStaticMeshComponent* GetPlayerBackSocketComponent() override;
+	//Set InteractObjectSystem
+	virtual void SetPlayerPossessedInteractObjectSystem() override;
+	virtual void MergeWithPlayerPossessedInteractObjectSystem() override;
+	virtual void SeperateFromPlayerPossessedInteractObjectSystem() override;
+	virtual void SetNewInteractObjectSystem() override;
 	//InteractObjectStatusChanged
 	//void UpdateBehaviorStatus(FString NewInteractObjectStatus) override;
 	// Called to bind functionality to input
 	//Test
-	void LogHello();
+	virtual void LogHello() override;
 };

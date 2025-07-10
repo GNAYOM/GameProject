@@ -124,7 +124,8 @@ void ABaseCharacter::Tick(float DeltaTime)
 		CameraInput.Y = 0.f;
 		CameraInput.X = 0.f;
 	}//cam delta pitch rotator
-	
+	if(MainPlayerState->PossessedSystem->ConnectionMatrix.Num() != 0)
+	MainGameState->PrintConnectionMatrix(*MainPlayerState->PossessedSystem);
 	/*{
 		FRotator CamDeltaRotator = CamSpringArm->GetComponentRotation();
 

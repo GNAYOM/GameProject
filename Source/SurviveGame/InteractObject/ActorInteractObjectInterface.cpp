@@ -118,6 +118,27 @@ UStaticMeshComponent* AActorInteractObjectInterface::GetPlayerBackSocketComponen
 	return Default;
 }
 
+void AActorInteractObjectInterface::SetPlayerPossessedInteractObjectSystem()
+{
+	
+}
+
+void AActorInteractObjectInterface::MergeWithPlayerPossessedInteractObjectSystem()
+{
+}
+
+void AActorInteractObjectInterface::SeperateFromPlayerPossessedInteractObjectSystem()
+{
+}
+
+void AActorInteractObjectInterface::SetNewInteractObjectSystem()
+{
+}
+
+void AActorInteractObjectInterface::SetConnectionWithInteractObject()
+{
+}
+
 void AActorInteractObjectInterface::LogHello()
 {
 	UE_LOG(LogTemp,Warning,TEXT("Hello  ::)"));

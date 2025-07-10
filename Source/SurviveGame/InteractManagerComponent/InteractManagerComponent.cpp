@@ -32,17 +32,32 @@ void UInteractManagerComponent::BeginPlay()
 		InteractObjectDetector->OnComponentBeginOverlap.AddDynamic(this,&UInteractManagerComponent::OnInteractObjectBeginOverlap);
 		InteractObjectDetector->OnComponentEndOverlap.AddDynamic(this,&UInteractManagerComponent::OnInteractObjectEndOverlapEnd);
 	}
-	
+	MainPlayerState = GetWorld()->GetFirstPlayerController()->GetPlayerState<AMainPlayerState>();	
 	// ...
 	
 }
 
 
-// Called every frame
-void UInteractManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UInteractManagerComponent::InteractObjectSelection()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if(MainPlayerState->InteractManagerComponentStatus == SelectByRange)
+	{
+		SelectInteractObjectByRange();
+	}
 
+	if(SelectedTargetInteractObject != NULL)
+		SelectedTargetInteractObject->IsSelectedByPlayer = true;//本次选中的物体被玩家选中的标志位设置为true
+	if(LastSelectedTargetInteractObject != NULL
+		&& LastSelectedTargetInteractObject != SelectedTargetInteractObject)//如果上一个被选中的物体不为空且上一个选中的物体不等于当前选中的物体
+	{
+		LastSelectedTargetInteractObject->IsSelectedByPlayer = false;//将上一个物体被玩家选中的标志置零
+	}
+	LastSelectedTargetInteractObject = SelectedTargetInteractObject;//将上一个选中的物体设置为本次选中的物体
+
+}
+
+void UInteractManagerComponent::SelectInteractObjectByRange()
+{
 	tmp_InteractObjectsSorted = InRangeInteractObjects;
 	float tmp_CurrentDistanceA = 0.f;
 	float tmp_CurrentDistanceB = 0.f;
@@ -50,7 +65,7 @@ void UInteractManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	//In range InteractObject Sort by distance
 	for(int i = 0; i < tmp_InteractObjectsSorted.Num(); i++)
 	{
-
+		
 		for(int j = i;j<tmp_InteractObjectsSorted.Num();j++)
 		{
 			tmp_CurrentDistanceA = (RootSkeletalMesh -> GetComponentLocation()
@@ -73,15 +88,31 @@ void UInteractManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		i++;
 	}
 	InteractObjectsSorted = tmp_InteractObjectsSorted;
+	if(!InteractObjectsSorted.IsEmpty())//如果排序队列不为空
+	{
+		SelectedTargetInteractObject = InteractObjectsSorted[0];//选中最近的物体
+	}
+	else
+	{
+		SelectedTargetInteractObject = NULL;
+	}
+
 	// ...
+}
+
+// Called every frame
+void UInteractManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	InteractObjectSelection();
 }
 
 void UInteractManagerComponent::InteractObjectInputDetected(int Input)
 {
 	
-	if(!InteractObjectsSorted.IsEmpty())
+	if(SelectedTargetInteractObject != NULL)
 	{
-		InteractObjectsSorted[0]->ReleaseEventActively(Input);
+		SelectedTargetInteractObject->ReleaseEventActively(Input);
 		//GetAttachmentRootActor()->GetComponentByClass<UPhysicsConstraintComponent>()->ConstraintActor2 = InteractObjectsSorted[0];
 		
 	}

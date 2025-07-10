@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerState.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "SurviveGame/InteractObject/InteractObjectProperty.h"
+#include "SurviveGame/GameState/InteractObjectSystem.h"
+#include "SurviveGame/Enum/InteractManagerComponentStatusEnum/InteractManagerComponentStatusEnum.h"
 #include "MainPlayerState.generated.h"
 
 /**
@@ -23,6 +25,8 @@ public:
 	float WeightLoad = 50;
 	FVector CurrentDirectionNormal;
 	FVector BackSocketCurrentLocation;
+	InteractObjectSystem* PossessedSystem;
 	UPROPERTY()
 	UStaticMeshComponent* BackSocket;
+	int InteractManagerComponentStatus;
 };

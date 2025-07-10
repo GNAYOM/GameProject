@@ -67,7 +67,7 @@ protected:
 	UInputAction* Left;
 	UPROPERTY(EditAnywhere,Category="Action")
 	UInputAction* Right;
-	//InteractAction
+	//Interact Action
 	UPROPERTY(EditAnywhere,Category="Action")
 	UInputAction* Focus;
 	UPROPERTY(EditAnywhere,Category="Action")
@@ -82,6 +82,9 @@ protected:
 	UInputAction* Option3;
 	UPROPERTY(EditAnywhere,Category="Action")
 	UInputAction* Option4;
+	//SelectS
+	UPROPERTY(EditAnywhere,Category="Action")
+	UInputAction* SelectFromBackStorage;
 	//EquipmentRelated
 	UPROPERTY(EditAnywhere,Category="Action")
 	UInputAction* EquipProjectileEquipment;

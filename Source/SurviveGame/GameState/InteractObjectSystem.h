@@ -8,4 +8,7 @@ struct InteractObjectSystem
 {
 	TArray<TArray<int>>	ConnectionMatrix;
 	TArray<AActorInteractObjectInterface*> TotalInteractObjects;
+	InteractObjectSystem* NewInteractObjectSystem;
+	bool IsPossessedByPlayer;
+	//TArray<AActorInteractObjectInterface*> BackStorage;
 };
