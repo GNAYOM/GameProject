@@ -36,6 +36,8 @@ public:
 	void Option2Selected();
 	void Option3Selected();
 	void Option4Selected();
+	//InteractManagerComponent Status callback
+	void SetSelectFromBackSocket();
 	//CameraControl callback
 	void CameraYawRotate(const FInputActionValue& val);
 	void CameraPitchRotate(const FInputActionValue& val);
@@ -84,7 +86,7 @@ protected:
 	UInputAction* Option4;
 	//SelectS
 	UPROPERTY(EditAnywhere,Category="Action")
-	UInputAction* SelectFromBackStorage;
+	UInputAction* SelectFromBackSocket;
 	//EquipmentRelated
 	UPROPERTY(EditAnywhere,Category="Action")
 	UInputAction* EquipProjectileEquipment;

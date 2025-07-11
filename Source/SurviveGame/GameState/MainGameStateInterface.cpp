@@ -20,6 +20,13 @@ InteractObjectSystem* AMainGameStateInterface::MergeInteractObjectSystem(Interac
 	return Default;
 }
 
+InteractObjectSystem* AMainGameStateInterface::SeperateInteractObjectSystem(InteractObjectSystem* Source1,
+		int DisConnectObject1Index,int DisConnectObject2Index)
+{
+	InteractObjectSystem* Default = new InteractObjectSystem();
+	return  Default;
+}
+
 InteractObjectSystem* AMainGameStateInterface::SeperateInteractObjectSystem()
 {
 	InteractObjectSystem* Default = new InteractObjectSystem();

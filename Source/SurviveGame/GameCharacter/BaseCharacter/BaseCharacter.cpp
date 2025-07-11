@@ -99,6 +99,17 @@ void ABaseCharacter::Option4Selected()
 	InteractManagerComponent->InteractObjectInputDetected(InputEnum::Option4);
 }
 
+void ABaseCharacter::SetSelectFromBackSocket()
+{
+	if(MainPlayerState->InteractManagerComponentStatus != InteractManagerComponentStatusEnum::SelectFromBackSocket)
+		MainPlayerState->InteractManagerComponentStatus =  InteractManagerComponentStatusEnum::SelectFromBackSocket;
+	else
+	{
+		MainPlayerState->InteractManagerComponentStatus = InteractManagerComponentStatusEnum::SelectByRange;
+	}
+}
+
+
 // Called when the game starts or when spawned
 void ABaseCharacter::BeginPlay()
 {
@@ -237,6 +248,12 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		{
 			EnhancedInputComponent -> BindAction(Option4,ETriggerEvent::Triggered,this
 				,&ABaseCharacter::Option4Selected);
+		}
+		if(SelectFromBackSocket)
+		{
+			
+			EnhancedInputComponent -> BindAction(SelectFromBackSocket,ETriggerEvent::Triggered,this
+				,&ABaseCharacter::SetSelectFromBackSocket);
 		}
 	}
 }

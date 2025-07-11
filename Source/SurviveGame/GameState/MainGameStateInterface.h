@@ -19,6 +19,8 @@ class SURVIVEGAME_API AMainGameStateInterface : public AGameStateBase
 	virtual void InteractObjectSystemAddInteractObject(InteractObjectSystem* TargetInteractObjectSystem,AActorInteractObjectInterface* NewInteractObject);
 	virtual InteractObjectSystem* MergeInteractObjectSystem(InteractObjectSystem* Source1,InteractObjectSystem* Source2,
 		int ConnectObject1Index,int ConnectObject2Index);
+	virtual InteractObjectSystem* SeperateInteractObjectSystem(InteractObjectSystem* Source1,
+		int DisConnectObject1Index,int DisConnectObject2Index);
 	virtual InteractObjectSystem* SeperateInteractObjectSystem();
 	virtual InteractObjectSystem* DestroyInteractObjectSystem();
 	virtual void PrintConnectionMatrix(InteractObjectSystem PrintTarget);

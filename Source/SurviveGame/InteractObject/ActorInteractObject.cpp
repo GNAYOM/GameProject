@@ -153,7 +153,7 @@ void AActorInteractObject::MergeWithPlayerPossessedInteractObjectSystem()
 	int Tmp_BackStorageIndex = 0;
 	int Tmp_ConnectObject2Index = 0;
 	UE_LOG(LogTemp,Warning,TEXT("BackStorageAttached"));
-	SetActorLocation(this->GetPlayerBackSocketPosition());
+	SetActorLocation(this->GetPlayerBackSocketPosition() - MainPlayerState->CurrentDirectionNormal*0.5);
 	SetActorRotation(this->GetPlayerDirectionRotator());
 	PrimitiveComponent->SetSimulatePhysics(false);
 	AttachToComponent(this->GetPlayerBackSocketComponent(),FAttachmentTransformRules::KeepWorldTransform);
@@ -166,7 +166,7 @@ void AActorInteractObject::MergeWithPlayerPossessedInteractObjectSystem()
 	for(int i = 0;AActorInteractObjectInterface* I: CurrentInteractObjectSystem->TotalInteractObjects)
 	{
 		if(I == this)
-			Tmp_BackStorageIndex = i;
+			Tmp_ConnectObject2Index = i;
 		i++;
 	}	
 	MainGameState->MergeInteractObjectSystem(MainPlayerState->PossessedSystem,CurrentInteractObjectSystem
@@ -175,7 +175,25 @@ void AActorInteractObject::MergeWithPlayerPossessedInteractObjectSystem()
 
 void AActorInteractObject::SeperateFromPlayerPossessedInteractObjectSystem()
 {
-	
+	int Tmp_BackStorageIndex = 0;
+	int Tmp_DisConnectObject2Index = 0;
+	UE_LOG(LogTemp,Warning,TEXT("DeattachedFromBackStorage"));
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	PrimitiveComponent->SetSimulatePhysics(true);
+	for(int i = 0;AActorInteractObjectInterface* I: CurrentInteractObjectSystem->TotalInteractObjects)
+	{
+		if(I->BehaviorStatus.Equals("EquippedBackStorage"))
+			Tmp_BackStorageIndex = i;
+		i++;
+	}
+	for(int i = 0;AActorInteractObjectInterface* I: CurrentInteractObjectSystem->TotalInteractObjects)
+	{
+		if(I == this)
+			Tmp_DisConnectObject2Index = i;
+		i++;
+	}	
+	MainGameState->SeperateInteractObjectSystem(CurrentInteractObjectSystem
+		,Tmp_BackStorageIndex,Tmp_DisConnectObject2Index);
 }
 
 void AActorInteractObject::SetNewInteractObjectSystem()

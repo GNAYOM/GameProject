@@ -30,6 +30,8 @@ public:
 	virtual void InteractObjectSystemAddInteractObject(InteractObjectSystem* TargetInteractObjectSystem, AActorInteractObjectInterface* NewInteractObject) override;
 	virtual InteractObjectSystem* MergeInteractObjectSystem(InteractObjectSystem* Source1,InteractObjectSystem* Source2,
 			int ConnectObject1Index,int ConnectObject2Index) override;
+	virtual InteractObjectSystem* SeperateInteractObjectSystem(InteractObjectSystem* Source1,
+		int DisConnectObject1Index,int DisConnectObject2Index) override;
 	virtual void PrintConnectionMatrix(InteractObjectSystem PrintTarget) override;
 	TArray<InteractObjectSystem* > InteractObjectSystems;
 };

@@ -44,6 +44,10 @@ void UInteractManagerComponent::InteractObjectSelection()
 	{
 		SelectInteractObjectByRange();
 	}
+	else if (MainPlayerState->InteractManagerComponentStatus == SelectFromBackSocket)
+	{
+		SelectInteractObjectFromBackSocket();
+	}
 
 	if(SelectedTargetInteractObject != NULL)
 		SelectedTargetInteractObject->IsSelectedByPlayer = true;//本次选中的物体被玩家选中的标志位设置为true
@@ -65,7 +69,6 @@ void UInteractManagerComponent::SelectInteractObjectByRange()
 	//In range InteractObject Sort by distance
 	for(int i = 0; i < tmp_InteractObjectsSorted.Num(); i++)
 	{
-		
 		for(int j = i;j<tmp_InteractObjectsSorted.Num();j++)
 		{
 			tmp_CurrentDistanceA = (RootSkeletalMesh -> GetComponentLocation()
@@ -98,6 +101,23 @@ void UInteractManagerComponent::SelectInteractObjectByRange()
 	}
 
 	// ...
+}
+
+void UInteractManagerComponent::SelectInteractObjectFromBackSocket()
+{
+	if(MainPlayerState->PossessedSystem->TotalInteractObjects.Num() != 0)
+	{
+		for(AActorInteractObjectInterface* I : MainPlayerState->PossessedSystem->TotalInteractObjects)
+			if (I->BehaviorStatus != "EquippedBackStorage")
+			{
+				SelectedTargetInteractObject = I;
+				break;
+			}
+	}
+	else
+	{
+		MainPlayerState->InteractManagerComponentStatus = SelectByRange;
+	}
 }
 
 // Called every frame

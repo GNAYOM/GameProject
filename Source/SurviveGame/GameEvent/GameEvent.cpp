@@ -569,6 +569,7 @@ void AGameEvent::CollectableBehavior()
 	if(MotherIOInterface->Option2JustPressed && IsConnected == true)
 	{
 		UE_LOG(LogTemp,Warning,TEXT("Disconnect"))
+		MotherIOInterface->SeperateFromPlayerPossessedInteractObjectSystem();
 		IsConnected = false;
 	}
 	InteractObjectInputFlagRefresh();
