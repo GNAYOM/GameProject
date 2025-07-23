@@ -12,6 +12,7 @@
 #include "SurviveGame/GameState/MainGameState.h"
 #include "SurviveGame/PlayerState/MainPlayerState.h"
 #include "SurviveGame/GameState/InteractObjectSystem.h"
+
 #include "ActorInteractObject.generated.h"
 
 UCLASS()
@@ -66,6 +67,8 @@ public:
 	virtual void MergeWithPlayerPossessedInteractObjectSystem() override;
 	virtual void SeperateFromPlayerPossessedInteractObjectSystem() override;
 	virtual void SetNewInteractObjectSystem() override;
+	//Socket
+	virtual void InitSocketPanel() override;
 	//InteractObjectStatusChanged
 	//void UpdateBehaviorStatus(FString NewInteractObjectStatus) override;
 	// Called to bind functionality to input

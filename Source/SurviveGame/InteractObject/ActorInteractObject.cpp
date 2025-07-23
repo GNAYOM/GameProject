@@ -51,7 +51,7 @@ void AActorInteractObject::BeginPlay()
 	//MainGameState->InteractObjectSystemAddInteractObject(CurrentInteractObjectSystem,this);
 	//UE_LOG(LogTemp,Warning,TEXT("%d"),CurrentInteractObjectSystem->ConnectionMatrix[1][1]);
 	//UE_LOG(LogTemp,Warning,TEXT("%d"),CurrentInteractObjectSystem->TotalInteractObjects.Num());
-
+	InitSocketPanel();
 	//UE_LOG(LogTemp,Warning,TEXT("%d"),	MainGameState->InteractObjectSystems[MainGameState->InteractObjectSystems.Find(CurrentInteractObjectSystem)]->ConnectionMatrix[1][1]);
 	//UE_LOG(LogTemp,Warning,TEXT("%d"),	MainGameState->InteractObjectSystems[MainGameState->InteractObjectSystems.Find(CurrentInteractObjectSystem)]->TotalInteractObjects.Num());
 }
@@ -141,9 +141,14 @@ void AActorInteractObject::SetPlayerPossessedInteractObjectSystem()
 	SetActorLocation(this->GetPlayerBackSocketPosition());
 	SetActorRotation(this->GetPlayerDirectionRotator());
 	PrimitiveComponent->SetSimulatePhysics(false);
+	PrimitiveComponent -> SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
+	IgnoreCamera = true;
 	AttachToComponent(this->GetPlayerBackSocketComponent(),FAttachmentTransformRules::KeepWorldTransform);
 	MainPlayerState->PossessedSystem = CurrentInteractObjectSystem;
 	MainPlayerState->PossessedSystem->IsPossessedByPlayer = true;
+	MainPlayerState->PossessedSystem->PlayerBackStorage = this;
+	MainPlayerState->PossessedSocketPanel = &SocketPanel;
+	
 }
 
 void AActorInteractObject::MergeWithPlayerPossessedInteractObjectSystem()
@@ -153,10 +158,28 @@ void AActorInteractObject::MergeWithPlayerPossessedInteractObjectSystem()
 	int Tmp_BackStorageIndex = 0;
 	int Tmp_ConnectObject2Index = 0;
 	UE_LOG(LogTemp,Warning,TEXT("BackStorageAttached"));
-	SetActorLocation(this->GetPlayerBackSocketPosition() - MainPlayerState->CurrentDirectionNormal*0.5);
-	SetActorRotation(this->GetPlayerDirectionRotator());
 	PrimitiveComponent->SetSimulatePhysics(false);
-	AttachToComponent(this->GetPlayerBackSocketComponent(),FAttachmentTransformRules::KeepWorldTransform);
+	PrimitiveComponent -> SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
+	IgnoreCamera = true;
+	//SetActorLocation(this->GetPlayerBackSocketPosition() - MainPlayerState->CurrentDirectionNormal*20);
+	//SetActorRotation(this->GetPlayerDirectionRotator());
+	if(MainPlayerState->PossessedSocketPanel->Panel[0][0].IsOccupied == false)
+	{
+		AttachToComponent(MainPlayerState->PossessedSystem->PlayerBackStorage->FindComponentByClass<USkeletalMeshComponent>()
+	,FAttachmentTransformRules::SnapToTargetNotIncludingScale
+	,MainPlayerState->PossessedSocketPanel->Panel[0][0].SocketName);
+		MainPlayerState->PossessedSocketPanel->Panel[0][0].IsOccupied = true;
+		Plug.CurrentSocket = &MainPlayerState->PossessedSocketPanel->Panel[0][0];
+	}
+	else
+	{
+				AttachToComponent(MainPlayerState->PossessedSystem->PlayerBackStorage->FindComponentByClass<USkeletalMeshComponent>()
+	,FAttachmentTransformRules::SnapToTargetNotIncludingScale
+	,MainPlayerState->PossessedSocketPanel->Panel[0][1].SocketName);
+		MainPlayerState->PossessedSocketPanel->Panel[0][1].IsOccupied = true;
+		Plug.CurrentSocket = &MainPlayerState->PossessedSocketPanel->Panel[0][1];
+	}
+
 	for(int i = 0;AActorInteractObjectInterface* I: MainPlayerState->PossessedSystem->TotalInteractObjects)
 	{
 		if(I->BehaviorStatus.Equals("EquippedBackStorage"))
@@ -180,6 +203,7 @@ void AActorInteractObject::SeperateFromPlayerPossessedInteractObjectSystem()
 	UE_LOG(LogTemp,Warning,TEXT("DeattachedFromBackStorage"));
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	PrimitiveComponent->SetSimulatePhysics(true);
+	IgnoreCamera = false;
 	for(int i = 0;AActorInteractObjectInterface* I: CurrentInteractObjectSystem->TotalInteractObjects)
 	{
 		if(I->BehaviorStatus.Equals("EquippedBackStorage"))
@@ -194,11 +218,78 @@ void AActorInteractObject::SeperateFromPlayerPossessedInteractObjectSystem()
 	}	
 	MainGameState->SeperateInteractObjectSystem(CurrentInteractObjectSystem
 		,Tmp_BackStorageIndex,Tmp_DisConnectObject2Index);
+	Plug.CurrentSocket->IsOccupied = false;
 }
 
 void AActorInteractObject::SetNewInteractObjectSystem()
 {
 	CurrentInteractObjectSystem = CurrentInteractObjectSystem -> NewInteractObjectSystem;
+}
+
+void AActorInteractObject::InitSocketPanel()
+{
+	int tmp_ColIndex = 0;
+	int tmp_RowIndex = 0;
+	int tmp_MaxColIndex = 0;
+	int tmp_MaxRowIndex = 0;
+	FString Stmp_ColIndex;
+	FString Stmp_RowIndex;
+	Socket tmp_NewSocket = Socket();
+	TArray<FName> tmp_SocketNames =  MeshComponent->GetAllSocketNames();
+	if (tmp_SocketNames.Num() != 0)
+	{
+		for (FName I : tmp_SocketNames)
+		{
+			FString tmp_I = I.ToString();
+			if (tmp_I.RemoveFromStart("Socket"))
+			{
+				UE_LOG(LogTemp,Warning,TEXT("%s"),*tmp_I);
+				tmp_I.Split(",",&Stmp_RowIndex,&Stmp_ColIndex);
+				UE_LOG(LogTemp,Warning,TEXT("%s"),*Stmp_RowIndex);
+				UE_LOG(LogTemp,Warning,TEXT("%s"),*Stmp_ColIndex);
+				tmp_RowIndex = FCString::Atoi(*Stmp_RowIndex);
+				tmp_ColIndex = FCString::Atoi(*Stmp_ColIndex);
+				if (tmp_RowIndex > tmp_MaxRowIndex)
+				{
+					tmp_MaxRowIndex = tmp_RowIndex;
+				}
+				if (tmp_ColIndex > tmp_MaxColIndex)
+				{
+					tmp_MaxColIndex = tmp_ColIndex;
+				}
+			}
+		}
+		for (int i = 0; i<=tmp_MaxColIndex;i++)
+		{
+			SocketPanel.PanelRow.Add(tmp_NewSocket);
+		}
+		for (int i = 0; i<=tmp_MaxRowIndex;i++)
+		{
+			SocketPanel.Panel.Add(SocketPanel.PanelRow);
+		}
+		for (FName I : tmp_SocketNames)
+		{
+			FString tmp_I = I.ToString();
+			if (tmp_I.RemoveFromStart("Socket"))
+			{
+				UE_LOG(LogTemp,Warning,TEXT("%s"),*tmp_I);
+				tmp_I.Split(",",&Stmp_RowIndex,&Stmp_ColIndex);
+				UE_LOG(LogTemp,Warning,TEXT("%s"),*Stmp_RowIndex);
+				UE_LOG(LogTemp,Warning,TEXT("%s"),*Stmp_ColIndex);
+				tmp_RowIndex = FCString::Atoi(*Stmp_RowIndex);
+				tmp_ColIndex = FCString::Atoi(*Stmp_ColIndex);
+				tmp_NewSocket.IsOccupied = false;
+				tmp_NewSocket.SocketName = I;
+				SocketPanel.Panel[tmp_RowIndex][tmp_ColIndex] = tmp_NewSocket;
+			}
+		}
+	}
+	for (TArray<Socket> I: SocketPanel.Panel)
+		for (Socket G : I)
+		{
+			UE_LOG(LogTemp,Warning,TEXT("%s"),*G.SocketName.ToString());
+		}
+
 }
 
 void AActorInteractObject::LogHello()
@@ -215,19 +306,24 @@ void AActorInteractObject::LogHello()
 void AActorInteractObject::OnCamBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("BeginOverLap CollisionObjectType: %d" ),OtherComp->GetCollisionObjectType());
-	
-	PrimitiveComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	PrimitiveComponent->SetCollisionResponseToChannel(ECC_Camera,ECR_Block);
-	
+	if(!IgnoreCamera)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BeginOverLap CollisionObjectType: %d" ),OtherComp->GetCollisionObjectType());
+		PrimitiveComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		PrimitiveComponent->SetCollisionResponseToChannel(ECC_Camera,ECR_Block);
+	}
 }
 
 void AActorInteractObject::OnCamEndOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	UE_LOG(LogTemp, Warning, TEXT("EndOverlap"));
-	PrimitiveComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	PrimitiveComponent->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
+	if(!IgnoreCamera)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EndOverlap"));
+		PrimitiveComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		PrimitiveComponent->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
+	}
+
 }
 
 // Called every frame

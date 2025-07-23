@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "SurviveGame/InteractObject/InteractObjectProperty.h"
+#include "SurviveGame/InteractObject/InteractObjectSocket.h"
+#include "SurviveGame/InteractObject/InteractObjectPlug.h"
 #include "ActorInteractObjectInterface.generated.h"
 
 
@@ -64,8 +66,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	int EVENTIDAutoRelease;
 	//Socket
-	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* Socket;//TestSocket
+	SocketPanel SocketPanel;
+	//Plug
+	Plug Plug;
 	//Properties
 	InteractObjectProperty Property;
 	UPROPERTY(EditAnywhere)
@@ -91,6 +94,10 @@ public:
 	virtual void SeperateFromPlayerPossessedInteractObjectSystem();
 	virtual void SetNewInteractObjectSystem();
 	virtual void SetConnectionWithInteractObject();
+	//InitSocket
+	virtual void InitSocketPanel();
+	//CameraCollosion
+	bool IgnoreCamera = false;
 	//Test
 	virtual void LogHello();
 	

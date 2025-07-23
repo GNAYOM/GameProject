@@ -84,6 +84,10 @@ InteractObjectSystem* AMainGameState::MergeInteractObjectSystem(InteractObjectSy
 	if (Source1->IsPossessedByPlayer || Source2->IsPossessedByPlayer)
 	{
 		NewInteractObjectSystem->IsPossessedByPlayer = true;
+		if(Source1->IsPossessedByPlayer)
+			NewInteractObjectSystem->PlayerBackStorage = Source1->PlayerBackStorage;
+		if(Source2->IsPossessedByPlayer)
+			NewInteractObjectSystem->PlayerBackStorage = Source2->PlayerBackStorage;
 		MainPlayerState->PossessedSystem = NewInteractObjectSystem;
 	}
 	InteractObjectSystems.Remove(Source1);
@@ -195,6 +199,7 @@ InteractObjectSystem* AMainGameState::SeperateInteractObjectSystem(InteractObjec
 		if(I->BehaviorStatus.Equals("EquippedBackStorage"))
 		{
 			NewInteractObjectSystem1->IsPossessedByPlayer = true;
+			NewInteractObjectSystem1->PlayerBackStorage = Source1->PlayerBackStorage;
 			MainPlayerState->PossessedSystem = NewInteractObjectSystem1;
 			break;
 		}
@@ -204,6 +209,7 @@ InteractObjectSystem* AMainGameState::SeperateInteractObjectSystem(InteractObjec
 		if(I->BehaviorStatus.Equals("EquippedBackStorage"))
 		{
 			NewInteractObjectSystem2->IsPossessedByPlayer = true;
+			NewInteractObjectSystem2->PlayerBackStorage = Source1->PlayerBackStorage;
 			MainPlayerState->PossessedSystem = NewInteractObjectSystem2;
 			break;
 		}

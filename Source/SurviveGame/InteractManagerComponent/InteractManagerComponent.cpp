@@ -105,7 +105,7 @@ void UInteractManagerComponent::SelectInteractObjectByRange()
 
 void UInteractManagerComponent::SelectInteractObjectFromBackSocket()
 {
-	if(MainPlayerState->PossessedSystem->TotalInteractObjects.Num() != 0)
+	if(MainPlayerState->PossessedSystem->TotalInteractObjects.Num() > 1)
 	{
 		for(AActorInteractObjectInterface* I : MainPlayerState->PossessedSystem->TotalInteractObjects)
 			if (I->BehaviorStatus != "EquippedBackStorage")
@@ -116,7 +116,8 @@ void UInteractManagerComponent::SelectInteractObjectFromBackSocket()
 	}
 	else
 	{
-		MainPlayerState->InteractManagerComponentStatus = SelectByRange;
+		SelectedTargetInteractObject = NULL;
+		//MainPlayerState->InteractManagerComponentStatus = SelectByRange;
 	}
 }
 

@@ -8,6 +8,7 @@
 #include "SurviveGame/InteractObject/InteractObjectProperty.h"
 #include "SurviveGame/GameState/InteractObjectSystem.h"
 #include "SurviveGame/Enum/InteractManagerComponentStatusEnum/InteractManagerComponentStatusEnum.h"
+#include "SurviveGame/InteractObject/InteractObjectSocket.h"
 #include "MainPlayerState.generated.h"
 
 /**
@@ -26,6 +27,7 @@ public:
 	FVector CurrentDirectionNormal;
 	FVector BackSocketCurrentLocation;
 	InteractObjectSystem* PossessedSystem;
+	SocketPanel* PossessedSocketPanel;
 	UPROPERTY()
 	UStaticMeshComponent* BackSocket;
 	int InteractManagerComponentStatus;

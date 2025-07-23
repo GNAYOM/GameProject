@@ -139,6 +139,10 @@ void AActorInteractObjectInterface::SetConnectionWithInteractObject()
 {
 }
 
+void AActorInteractObjectInterface::InitSocketPanel()
+{
+}
+
 void AActorInteractObjectInterface::LogHello()
 {
 	UE_LOG(LogTemp,Warning,TEXT("Hello  ::)"));
