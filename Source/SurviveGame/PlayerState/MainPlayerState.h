@@ -31,4 +31,5 @@ public:
 	UPROPERTY()
 	UStaticMeshComponent* BackSocket;
 	int InteractManagerComponentStatus;
+	void PrintSocketState();
 };

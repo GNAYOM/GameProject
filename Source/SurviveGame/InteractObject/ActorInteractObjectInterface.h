@@ -9,7 +9,12 @@
 #include "SurviveGame/InteractObject/InteractObjectPlug.h"
 #include "ActorInteractObjectInterface.generated.h"
 
-
+struct TargetSocketInfo
+{
+	bool BeginMerge;
+	int SocketRowIndex;
+	int SocketColIndex;
+};
 UCLASS(Abstract)
 class SURVIVEGAME_API AActorInteractObjectInterface : public AActor
 {
@@ -69,6 +74,7 @@ public:
 	SocketPanel SocketPanel;
 	//Plug
 	Plug Plug;
+	TargetSocketInfo CurrentSocketInfo;
 	//Properties
 	InteractObjectProperty Property;
 	UPROPERTY(EditAnywhere)

@@ -69,6 +69,9 @@ public:
 	virtual void SetNewInteractObjectSystem() override;
 	//Socket
 	virtual void InitSocketPanel() override;
+	TargetSocketInfo FindTargetSocket();
+	void SetSocketsOccupied(int RowIndex,int ColIndex);
+	void DisconnectFromSocket(int RowIndex,int ColIndex);
 	//InteractObjectStatusChanged
 	//void UpdateBehaviorStatus(FString NewInteractObjectStatus) override;
 	// Called to bind functionality to input

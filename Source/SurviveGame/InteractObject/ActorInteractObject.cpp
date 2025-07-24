@@ -155,49 +155,48 @@ void AActorInteractObject::MergeWithPlayerPossessedInteractObjectSystem()
 {
 	//CurrentInteractObjectSystem = MainPlayerState->PossessedSystem;
 	//MainGameState->InteractObjectSystemAddInteractObject(CurrentInteractObjectSystem,this);//Test,Not really merged
-	int Tmp_BackStorageIndex = 0;
-	int Tmp_ConnectObject2Index = 0;
-	UE_LOG(LogTemp,Warning,TEXT("BackStorageAttached"));
-	PrimitiveComponent->SetSimulatePhysics(false);
-	PrimitiveComponent -> SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
-	IgnoreCamera = true;
-	//SetActorLocation(this->GetPlayerBackSocketPosition() - MainPlayerState->CurrentDirectionNormal*20);
-	//SetActorRotation(this->GetPlayerDirectionRotator());
-	if(MainPlayerState->PossessedSocketPanel->Panel[0][0].IsOccupied == false)
+	if(MainPlayerState->PossessedSocketPanel == NULL)
+		return;
+	CurrentSocketInfo = FindTargetSocket();
+	if(CurrentSocketInfo.BeginMerge)
 	{
-		AttachToComponent(MainPlayerState->PossessedSystem->PlayerBackStorage->FindComponentByClass<USkeletalMeshComponent>()
-	,FAttachmentTransformRules::SnapToTargetNotIncludingScale
-	,MainPlayerState->PossessedSocketPanel->Panel[0][0].SocketName);
-		MainPlayerState->PossessedSocketPanel->Panel[0][0].IsOccupied = true;
-		Plug.CurrentSocket = &MainPlayerState->PossessedSocketPanel->Panel[0][0];
-	}
-	else
-	{
-				AttachToComponent(MainPlayerState->PossessedSystem->PlayerBackStorage->FindComponentByClass<USkeletalMeshComponent>()
-	,FAttachmentTransformRules::SnapToTargetNotIncludingScale
-	,MainPlayerState->PossessedSocketPanel->Panel[0][1].SocketName);
-		MainPlayerState->PossessedSocketPanel->Panel[0][1].IsOccupied = true;
-		Plug.CurrentSocket = &MainPlayerState->PossessedSocketPanel->Panel[0][1];
-	}
+		int Tmp_BackStorageIndex = 0;
+		int Tmp_ConnectObject2Index = 0;
+		UE_LOG(LogTemp,Warning,TEXT("BackStorageAttached"));
+		PrimitiveComponent->SetSimulatePhysics(false);
+		PrimitiveComponent -> SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
+		IgnoreCamera = true;
+		//SetActorLocation(this->GetPlayerBackSocketPosition() - MainPlayerState->CurrentDirectionNormal*20);
+		//SetActorRotation(this->GetPlayerDirectionRotator());
 
-	for(int i = 0;AActorInteractObjectInterface* I: MainPlayerState->PossessedSystem->TotalInteractObjects)
-	{
-		if(I->BehaviorStatus.Equals("EquippedBackStorage"))
-			Tmp_BackStorageIndex = i;
-		i++;
+		AttachToComponent(MainPlayerState->PossessedSystem->PlayerBackStorage->FindComponentByClass<USkeletalMeshComponent>()
+			,FAttachmentTransformRules::SnapToTargetNotIncludingScale
+			,MainPlayerState->PossessedSocketPanel->
+			Panel[CurrentSocketInfo.SocketRowIndex][CurrentSocketInfo.SocketColIndex].SocketName);
+	
+
+		for(int i = 0;AActorInteractObjectInterface* I: MainPlayerState->PossessedSystem->TotalInteractObjects)
+		{
+			if(I->BehaviorStatus.Equals("EquippedBackStorage"))
+				Tmp_BackStorageIndex = i;
+			i++;
+		}
+		for(int i = 0;AActorInteractObjectInterface* I: CurrentInteractObjectSystem->TotalInteractObjects)
+		{
+			if(I == this)
+				Tmp_ConnectObject2Index = i;
+			i++;
+		}	
+		MainGameState->MergeInteractObjectSystem(MainPlayerState->PossessedSystem,CurrentInteractObjectSystem
+			,Tmp_BackStorageIndex,Tmp_ConnectObject2Index);
 	}
-	for(int i = 0;AActorInteractObjectInterface* I: CurrentInteractObjectSystem->TotalInteractObjects)
-	{
-		if(I == this)
-			Tmp_ConnectObject2Index = i;
-		i++;
-	}	
-	MainGameState->MergeInteractObjectSystem(MainPlayerState->PossessedSystem,CurrentInteractObjectSystem
-		,Tmp_BackStorageIndex,Tmp_ConnectObject2Index);
+	SetSocketsOccupied(CurrentSocketInfo.SocketRowIndex,CurrentSocketInfo.SocketColIndex);
 }
 
 void AActorInteractObject::SeperateFromPlayerPossessedInteractObjectSystem()
 {
+	if(Plug.CurrentSocket == NULL)
+		return;
 	int Tmp_BackStorageIndex = 0;
 	int Tmp_DisConnectObject2Index = 0;
 	UE_LOG(LogTemp,Warning,TEXT("DeattachedFromBackStorage"));
@@ -218,7 +217,8 @@ void AActorInteractObject::SeperateFromPlayerPossessedInteractObjectSystem()
 	}	
 	MainGameState->SeperateInteractObjectSystem(CurrentInteractObjectSystem
 		,Tmp_BackStorageIndex,Tmp_DisConnectObject2Index);
-	Plug.CurrentSocket->IsOccupied = false;
+	DisconnectFromSocket(CurrentSocketInfo.SocketRowIndex,CurrentSocketInfo.SocketColIndex);
+	CurrentSocketInfo = TargetSocketInfo();
 }
 
 void AActorInteractObject::SetNewInteractObjectSystem()
@@ -290,6 +290,74 @@ void AActorInteractObject::InitSocketPanel()
 			UE_LOG(LogTemp,Warning,TEXT("%s"),*G.SocketName.ToString());
 		}
 
+}
+
+TargetSocketInfo AActorInteractObject::FindTargetSocket()
+{
+	TargetSocketInfo tmp_TargetSocketInfo = TargetSocketInfo();
+	bool tmp_BeginMerge = false;
+	bool tmp_OccupiedDetected = false;
+	bool tmp_OutOfRange = false;
+	int tmp_SocketRowIndex = 0;
+	int tmp_SocketColIndex = 0;
+	for(int i = 0;i<MainPlayerState->PossessedSocketPanel->Panel.Num();i++)
+	{
+		if(tmp_BeginMerge == true)
+		{
+			break;
+		}
+		for(int j = 0;j<MainPlayerState->PossessedSocketPanel->PanelRow.Num();j++)
+		{
+			for(int k = 0;k<=Plug.PlugRowMaxIndex;k++)
+				for(int l = 0;l<=Plug.PlugColMaxIndex;l++)
+				{
+					if(i+k >= MainPlayerState->PossessedSocketPanel->Panel.Num()||
+						j+l >= MainPlayerState->PossessedSocketPanel->PanelRow.Num())
+						tmp_OutOfRange = true;
+					else if(MainPlayerState->PossessedSocketPanel->Panel[i+k][j+l].IsOccupied)
+					{
+						tmp_OccupiedDetected = true;
+					}
+				}
+			if (tmp_OccupiedDetected == false && tmp_OutOfRange == false)
+			{
+				tmp_SocketRowIndex = i;
+				tmp_SocketColIndex = j;
+				tmp_BeginMerge = true;
+				break;
+			}
+			tmp_OccupiedDetected = false;
+			tmp_OutOfRange = false;
+		}
+	}
+	tmp_TargetSocketInfo.BeginMerge = tmp_BeginMerge;
+	tmp_TargetSocketInfo.SocketRowIndex = tmp_SocketRowIndex;
+	tmp_TargetSocketInfo.SocketColIndex = tmp_SocketColIndex;
+	return tmp_TargetSocketInfo;
+}
+
+void AActorInteractObject::SetSocketsOccupied(int RowIndex,int ColIndex)
+{
+	for(int k = 0;k<=Plug.PlugRowMaxIndex;k++)
+		for(int l = 0;l<=Plug.PlugColMaxIndex;l++)
+		{
+			MainPlayerState->PossessedSocketPanel->
+				Panel[RowIndex+k][ColIndex+l].IsOccupied = true;
+		}
+	Plug.CurrentSocket = &MainPlayerState->PossessedSocketPanel->
+		Panel[RowIndex][ColIndex];
+}
+
+void AActorInteractObject::DisconnectFromSocket(int RowIndex,int ColIndex)
+{
+	
+	for(int k = 0;k<=Plug.PlugRowMaxIndex;k++)
+		for(int l = 0;l<=Plug.PlugColMaxIndex;l++)
+		{
+			MainPlayerState->PossessedSocketPanel->
+				Panel[RowIndex+k][ColIndex+l].IsOccupied = false;
+		}
+	Plug.CurrentSocket = NULL;
 }
 
 void AActorInteractObject::LogHello()

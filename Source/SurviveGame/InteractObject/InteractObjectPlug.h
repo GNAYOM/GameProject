@@ -3,6 +3,6 @@
 struct Plug
 {
 	Socket* CurrentSocket;
-	int PlugRowMaxIndex;
-	int PlugColMaxIndex;
+	int PlugRowMaxIndex = 0;
+	int PlugColMaxIndex = 1;
 };
