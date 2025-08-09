@@ -15,6 +15,7 @@ UInteractManagerComponent::UInteractManagerComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	RootSkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>("RootSkeletalMesh");
+	InteractManagerComponentStatus = InteractManagerComponentStatusEnum::SelectByRange;
 	// ...
 }
 
@@ -40,11 +41,11 @@ void UInteractManagerComponent::BeginPlay()
 
 void UInteractManagerComponent::InteractObjectSelection()
 {
-	if(MainPlayerState->InteractManagerComponentStatus == SelectByRange)
+	if(InteractManagerComponentStatus == SelectByRange)
 	{
 		SelectInteractObjectByRange();
 	}
-	else if (MainPlayerState->InteractManagerComponentStatus == SelectFromBackSocket)
+	else if (InteractManagerComponentStatus == SelectFromPlayerBackSocket)
 	{
 		SelectInteractObjectFromBackSocket();
 	}

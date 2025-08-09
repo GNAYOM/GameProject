@@ -127,7 +127,15 @@ void AActorInteractObjectInterface::MergeWithPlayerPossessedInteractObjectSystem
 {
 }
 
+void AActorInteractObjectInterface::MergeWithSourceInteractObject()
+{
+}
+
 void AActorInteractObjectInterface::SeperateFromPlayerPossessedInteractObjectSystem()
+{
+}
+
+void AActorInteractObjectInterface::SeperateFromSourceInteractObject()
 {
 }
 

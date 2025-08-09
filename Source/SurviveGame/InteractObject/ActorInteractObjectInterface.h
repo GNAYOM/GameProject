@@ -71,7 +71,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	int EVENTIDAutoRelease;
 	//Socket
-	SocketPanel SocketPanel;
+	SocketPanel PossessedSocketPanel;
 	//Plug
 	Plug Plug;
 	TargetSocketInfo CurrentSocketInfo;
@@ -97,13 +97,18 @@ public:
 	//Set InteractObjectSystem
 	virtual void SetPlayerPossessedInteractObjectSystem();
 	virtual void MergeWithPlayerPossessedInteractObjectSystem();
+	virtual void MergeWithSourceInteractObject();
 	virtual void SeperateFromPlayerPossessedInteractObjectSystem();
+	virtual void SeperateFromSourceInteractObject();
 	virtual void SetNewInteractObjectSystem();
 	virtual void SetConnectionWithInteractObject();
 	//InitSocket
 	virtual void InitSocketPanel();
 	//CameraCollosion
 	bool IgnoreCamera = false;
+	//SourceInteractObject
+	UPROPERTY()
+	AActorInteractObjectInterface* SourceInteractObject;
 	//Test
 	virtual void LogHello();
 	

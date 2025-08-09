@@ -3,9 +3,11 @@
 enum InteractManagerComponentStatusEnum
 {
 	SelectByRange = 1,
-	SelectFromBackSocket = 2,
+	SelectFromPlayerBackSocket = 2,
 	SelectFromSystem = 3,
-	SelectByCursor = 4
+	SelectByCursor = 4,
+	Source2TargetOperation = 5,
+	UseEquipment = 6
 };
 enum SelectObjectType
 {

@@ -65,16 +65,15 @@ public:
 	//Set InteractObjectSystem
 	virtual void SetPlayerPossessedInteractObjectSystem() override;
 	virtual void MergeWithPlayerPossessedInteractObjectSystem() override;
+	virtual void MergeWithSourceInteractObject() override;
 	virtual void SeperateFromPlayerPossessedInteractObjectSystem() override;
+	virtual void SeperateFromSourceInteractObject() override;
 	virtual void SetNewInteractObjectSystem() override;
 	//Socket
 	virtual void InitSocketPanel() override;
-	TargetSocketInfo FindTargetSocket();
+	TargetSocketInfo FindTargetSocket(SocketPanel* TargetSocketPanel);
 	void SetSocketsOccupied(int RowIndex,int ColIndex);
 	void DisconnectFromSocket(int RowIndex,int ColIndex);
-	//InteractObjectStatusChanged
-	//void UpdateBehaviorStatus(FString NewInteractObjectStatus) override;
-	// Called to bind functionality to input
 	//Test
 	virtual void LogHello() override;
 };

@@ -19,7 +19,6 @@ AActorInteractObject::AActorInteractObject()
 	PrimitiveComponent = Cast<UPrimitiveComponent>(GetRootComponent());
 	A = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("PC"));
 	A->SetupAttachment(MeshComponent);
-	//Cast<UPrimitiveComponent>(GetRootComponent())->SetCollisionProfileName(FName("BlockAll"));
 	InteractObjectVolume = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractObjectVolume"));
 	InteractObjectVolume -> SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	InteractObjectVolume -> SetCollisionProfileName(FName(TEXT("InteractObject")));
@@ -31,8 +30,6 @@ AActorInteractObject::AActorInteractObject()
 void AActorInteractObject::BeginPlay()
 {
 	Super::BeginPlay(); 
-	/*InteractObjectDataTable = LoadObject<UDataTable>(this
-		,TEXT("/Script/Engine.DataTable'/Game/GameContent/DataTable/InterractObject/InteractObjectDataTable.InteractObjectDataTable'"));*/
 	MainGameState = GetWorld()->GetAuthGameMode()->GetGameState<AMainGameState>();
 	MainPlayerState = GetWorld()->GetFirstPlayerController()->GetPlayerState<AMainPlayerState>(); 
 	UpdateBehaviorStatus(BehaviorStatus);
@@ -41,19 +38,11 @@ void AActorInteractObject::BeginPlay()
 	if(EVENTIDAutoRelease != 0)
 		AutoReleaseEvent();
 	PrimitiveComponent -> SetSimulatePhysics(true);
-	//PrimitiveComponent -> SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	PrimitiveComponent -> SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
-	//PrimitiveComponent -> SetCollisionProfileName(FName(""));
 	PrimitiveComponent -> OnComponentBeginOverlap.AddDynamic(this,&AActorInteractObject::OnCamBeginOverlap);
 	PrimitiveComponent -> OnComponentEndOverlap.AddDynamic(this,&AActorInteractObject::OnCamEndOverlapEnd);
-	//PrimaryInteractObjectSystem
 	CurrentInteractObjectSystem =  MainGameState->CreateInteractObjectSystem(this);
-	//MainGameState->InteractObjectSystemAddInteractObject(CurrentInteractObjectSystem,this);
-	//UE_LOG(LogTemp,Warning,TEXT("%d"),CurrentInteractObjectSystem->ConnectionMatrix[1][1]);
-	//UE_LOG(LogTemp,Warning,TEXT("%d"),CurrentInteractObjectSystem->TotalInteractObjects.Num());
 	InitSocketPanel();
-	//UE_LOG(LogTemp,Warning,TEXT("%d"),	MainGameState->InteractObjectSystems[MainGameState->InteractObjectSystems.Find(CurrentInteractObjectSystem)]->ConnectionMatrix[1][1]);
-	//UE_LOG(LogTemp,Warning,TEXT("%d"),	MainGameState->InteractObjectSystems[MainGameState->InteractObjectSystems.Find(CurrentInteractObjectSystem)]->TotalInteractObjects.Num());
 }
 
 void AActorInteractObject::AutoReleaseEvent()
@@ -90,6 +79,8 @@ void AActorInteractObject::ReleaseEventActively(int Input)
 	tmp_NewGameEvent->MotherIOInterface = this;
 	UGameplayStatics::FinishSpawningActor(tmp_NewGameEvent,FTransform::Identity);
 	tmp_NewGameEvent->AttachToActor(this,FAttachmentTransformRules::KeepWorldTransform);
+
+	
 	//Cast<UPrimitiveComponent>(GetRootComponent())->SetSimulatePhysics(false);
 	//SetActorLocation(MainPlayerState->BackSocketCurrentLocation);
 	//SetActorRotation(MainPlayerState->CurrentDirectionNormal.Rotation());
@@ -98,7 +89,6 @@ void AActorInteractObject::ReleaseEventActively(int Input)
 	//AttachToComponent(MainCharacter->FindComponentByClass<UStaticMeshComponent>(),FAttachmentTransformRules::KeepWorldTransform);
 	//UPhysicsConstraintComponent* TMP = MainCharacter->FindComponentByClass<UPhysicsConstraintComponent>();
 	//PrimitiveComponent -> SetSimulatePhysics(false);
-
 	//A->UpdateConstraintFrames();
 	/*UPhysicsConstraintComponent* Aa =Cast<UPhysicsConstraintComponent>( AddComponentByClass(UPhysicsConstraintComponent::StaticClass()
 		,true
@@ -147,17 +137,15 @@ void AActorInteractObject::SetPlayerPossessedInteractObjectSystem()
 	MainPlayerState->PossessedSystem = CurrentInteractObjectSystem;
 	MainPlayerState->PossessedSystem->IsPossessedByPlayer = true;
 	MainPlayerState->PossessedSystem->PlayerBackStorage = this;
-	MainPlayerState->PossessedSocketPanel = &SocketPanel;
+	MainPlayerState->PossessedSocketPanel = &PossessedSocketPanel;
 	
 }
 
 void AActorInteractObject::MergeWithPlayerPossessedInteractObjectSystem()
 {
-	//CurrentInteractObjectSystem = MainPlayerState->PossessedSystem;
-	//MainGameState->InteractObjectSystemAddInteractObject(CurrentInteractObjectSystem,this);//Test,Not really merged
 	if(MainPlayerState->PossessedSocketPanel == NULL)
 		return;
-	CurrentSocketInfo = FindTargetSocket();
+	CurrentSocketInfo = FindTargetSocket(MainPlayerState->PossessedSocketPanel);
 	if(CurrentSocketInfo.BeginMerge)
 	{
 		int Tmp_BackStorageIndex = 0;
@@ -166,9 +154,6 @@ void AActorInteractObject::MergeWithPlayerPossessedInteractObjectSystem()
 		PrimitiveComponent->SetSimulatePhysics(false);
 		PrimitiveComponent -> SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
 		IgnoreCamera = true;
-		//SetActorLocation(this->GetPlayerBackSocketPosition() - MainPlayerState->CurrentDirectionNormal*20);
-		//SetActorRotation(this->GetPlayerDirectionRotator());
-
 		AttachToComponent(MainPlayerState->PossessedSystem->PlayerBackStorage->FindComponentByClass<USkeletalMeshComponent>()
 			,FAttachmentTransformRules::SnapToTargetNotIncludingScale
 			,MainPlayerState->PossessedSocketPanel->
@@ -191,6 +176,11 @@ void AActorInteractObject::MergeWithPlayerPossessedInteractObjectSystem()
 			,Tmp_BackStorageIndex,Tmp_ConnectObject2Index);
 	}
 	SetSocketsOccupied(CurrentSocketInfo.SocketRowIndex,CurrentSocketInfo.SocketColIndex);
+}
+
+void AActorInteractObject::MergeWithSourceInteractObject()
+{
+	Super::MergeWithSourceInteractObject();
 }
 
 void AActorInteractObject::SeperateFromPlayerPossessedInteractObjectSystem()
@@ -219,6 +209,11 @@ void AActorInteractObject::SeperateFromPlayerPossessedInteractObjectSystem()
 		,Tmp_BackStorageIndex,Tmp_DisConnectObject2Index);
 	DisconnectFromSocket(CurrentSocketInfo.SocketRowIndex,CurrentSocketInfo.SocketColIndex);
 	CurrentSocketInfo = TargetSocketInfo();
+}
+
+void AActorInteractObject::SeperateFromSourceInteractObject()
+{
+	Super::SeperateFromSourceInteractObject();
 }
 
 void AActorInteractObject::SetNewInteractObjectSystem()
@@ -261,11 +256,11 @@ void AActorInteractObject::InitSocketPanel()
 		}
 		for (int i = 0; i<=tmp_MaxColIndex;i++)
 		{
-			SocketPanel.PanelRow.Add(tmp_NewSocket);
+			PossessedSocketPanel.PanelRow.Add(tmp_NewSocket);
 		}
 		for (int i = 0; i<=tmp_MaxRowIndex;i++)
 		{
-			SocketPanel.Panel.Add(SocketPanel.PanelRow);
+			PossessedSocketPanel.Panel.Add(PossessedSocketPanel.PanelRow);
 		}
 		for (FName I : tmp_SocketNames)
 		{
@@ -280,11 +275,11 @@ void AActorInteractObject::InitSocketPanel()
 				tmp_ColIndex = FCString::Atoi(*Stmp_ColIndex);
 				tmp_NewSocket.IsOccupied = false;
 				tmp_NewSocket.SocketName = I;
-				SocketPanel.Panel[tmp_RowIndex][tmp_ColIndex] = tmp_NewSocket;
+				PossessedSocketPanel.Panel[tmp_RowIndex][tmp_ColIndex] = tmp_NewSocket;
 			}
 		}
 	}
-	for (TArray<Socket> I: SocketPanel.Panel)
+	for (TArray<Socket> I: PossessedSocketPanel.Panel)
 		for (Socket G : I)
 		{
 			UE_LOG(LogTemp,Warning,TEXT("%s"),*G.SocketName.ToString());
@@ -292,7 +287,7 @@ void AActorInteractObject::InitSocketPanel()
 
 }
 
-TargetSocketInfo AActorInteractObject::FindTargetSocket()
+TargetSocketInfo AActorInteractObject::FindTargetSocket(SocketPanel* TargetSocketPanel)
 {
 	TargetSocketInfo tmp_TargetSocketInfo = TargetSocketInfo();
 	bool tmp_BeginMerge = false;
@@ -365,12 +360,6 @@ void AActorInteractObject::LogHello()
 	UE_LOG(LogTemp,Warning,TEXT("Hello:)"));
 }
 
-//void AInteractObject::UpdateBehaviorStatus(FString NewItemStatus)
-//{
-//	Super::UpdateBehaviorStatus(NewItemStatus);
-//}
-
-
 void AActorInteractObject::OnCamBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -398,12 +387,6 @@ void AActorInteractObject::OnCamEndOverlapEnd(UPrimitiveComponent* OverlappedCom
 void AActorInteractObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//InteractObjectVolume->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	//GetRootComponent()->SetWorldRotation(MainPlayerState->CurrentDirectionNormal.Rotation());
-	//Option1JustPressed = false;
-	//Option2JustPressed = false;
-	//Option3JustPressed = false;
-	//Option4JustPressed = false;
 }
 
 

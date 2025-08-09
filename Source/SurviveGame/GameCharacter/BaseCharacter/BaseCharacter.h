@@ -38,6 +38,7 @@ public:
 	void Option4Selected();
 	//InteractManagerComponent Status callback
 	void SetSelectFromBackSocket();
+	void SetSelectAsSourceInteractObject();
 	//CameraControl callback
 	void CameraYawRotate(const FInputActionValue& val);
 	void CameraPitchRotate(const FInputActionValue& val);
@@ -77,6 +78,8 @@ protected:
 	UPROPERTY(EditAnywhere,Category="Action")
 	UInputAction* SwitchInRangeRight;
 	UPROPERTY(EditAnywhere,Category="Action")
+	UInputAction* SelectAsSourceObject;
+	UPROPERTY(EditAnywhere,Category="Action")
 	UInputAction* Option1;
 	UPROPERTY(EditAnywhere,Category="Action")
 	UInputAction* Option2;
@@ -84,7 +87,7 @@ protected:
 	UInputAction* Option3;
 	UPROPERTY(EditAnywhere,Category="Action")
 	UInputAction* Option4;
-	//SelectS
+	//InteractComponentStatusEnum
 	UPROPERTY(EditAnywhere,Category="Action")
 	UInputAction* SelectFromBackSocket;
 	//EquipmentRelated

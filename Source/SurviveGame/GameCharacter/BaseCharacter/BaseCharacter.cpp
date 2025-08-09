@@ -101,12 +101,17 @@ void ABaseCharacter::Option4Selected()
 
 void ABaseCharacter::SetSelectFromBackSocket()
 {
-	if(MainPlayerState->InteractManagerComponentStatus != InteractManagerComponentStatusEnum::SelectFromBackSocket)
-		MainPlayerState->InteractManagerComponentStatus =  InteractManagerComponentStatusEnum::SelectFromBackSocket;
+	if(InteractManagerComponent->InteractManagerComponentStatus != InteractManagerComponentStatusEnum::SelectFromPlayerBackSocket)
+		InteractManagerComponent->InteractManagerComponentStatus =  InteractManagerComponentStatusEnum::SelectFromPlayerBackSocket;
 	else
 	{
-		MainPlayerState->InteractManagerComponentStatus = InteractManagerComponentStatusEnum::SelectByRange;
+		InteractManagerComponent->InteractManagerComponentStatus = InteractManagerComponentStatusEnum::SelectByRange;
 	}
+}
+
+void ABaseCharacter::SetSelectAsSourceInteractObject()
+{
+	UE_LOG(LogTemp,Warning,TEXT("SetSelectAsSourceObject"));
 }
 
 
@@ -255,6 +260,11 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 			
 			EnhancedInputComponent -> BindAction(SelectFromBackSocket,ETriggerEvent::Triggered,this
 				,&ABaseCharacter::SetSelectFromBackSocket);
+		}
+		if(SelectAsSourceObject)
+		{
+			EnhancedInputComponent -> BindAction(SelectAsSourceObject,ETriggerEvent::Triggered,this
+				,&ABaseCharacter::SetSelectAsSourceInteractObject);
 		}
 	}
 }

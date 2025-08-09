@@ -23,11 +23,13 @@ class SURVIVEGAME_API UInteractManagerComponent : public USceneComponent
 public:	
 	// Sets default values for this component's properties
 	UInteractManagerComponent();
-
+	//InteractManagerComponent Status
+	int InteractManagerComponentStatus;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	//PlayerStatus
+	UPROPERTY()
 	AMainPlayerState* MainPlayerState;
 	//RootSkeletalMesh
 	UPROPERTY()
@@ -46,6 +48,8 @@ protected:
 	//Selected InteractObject
 	UPROPERTY()
 	AActorInteractObjectInterface* LastSelectedTargetInteractObject;
+	UPROPERTY()
+	AActorInteractObjectInterface* SourceInteractObject;
 	UPROPERTY()
 	AActorInteractObjectInterface* SelectedTargetInteractObject;
 	void InteractObjectSelection();
