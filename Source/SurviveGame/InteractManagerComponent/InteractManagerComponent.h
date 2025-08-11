@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InteractManagerComponentInterface.h"
 #include "Components/SceneComponent.h"
 #include "Components/BoxComponent.h"
-#include "SurviveGame/InteractObject/ActorInteractObject.h"
 #include "SurviveGame/InteractObject/ActorInteractObjectInterface.h"
-#include "SurviveGame/PlayerState/MainPlayerState.h"
 #include "SurviveGame/Enum/InteractManagerComponentStatusEnum/InteractManagerComponentStatusEnum.h"
+#include "SurviveGame/PlayerState/MainPlayerState.h"
 #include "InteractManagerComponent.generated.h"
 
 
@@ -16,15 +16,13 @@ class USphereComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 
-class SURVIVEGAME_API UInteractManagerComponent : public USceneComponent
+class SURVIVEGAME_API UInteractManagerComponent : public UInteractManagerComponentInterface
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
 	UInteractManagerComponent();
-	//InteractManagerComponent Status
-	int InteractManagerComponentStatus;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -48,8 +46,6 @@ protected:
 	//Selected InteractObject
 	UPROPERTY()
 	AActorInteractObjectInterface* LastSelectedTargetInteractObject;
-	UPROPERTY()
-	AActorInteractObjectInterface* SourceInteractObject;
 	UPROPERTY()
 	AActorInteractObjectInterface* SelectedTargetInteractObject;
 	void InteractObjectSelection();

@@ -112,6 +112,7 @@ void ABaseCharacter::SetSelectFromBackSocket()
 void ABaseCharacter::SetSelectAsSourceInteractObject()
 {
 	UE_LOG(LogTemp,Warning,TEXT("SetSelectAsSourceObject"));
+	
 }
 
 
@@ -122,6 +123,7 @@ void ABaseCharacter::BeginPlay()
 	MainGameState = GetWorld()->GetAuthGameMode()->GetGameState<AMainGameState>();
 	MainPlayerState = GetWorld()->GetFirstPlayerController()->GetPlayerState<AMainPlayerState>(); 
 	MainPlayerState -> BackSocket = BackSocket;
+	MainPlayerState -> PlayerPossessedInteractManagerComponent = InteractManagerComponent;
 	WeightAffectedMovementDataTable = LoadObject<UDataTable>(this
 		,TEXT("/Script/Engine.DataTable'/Game/GameContent/DataTable/Character/BaseCharacter/WeightSystem/WeightAffectedMovementDataTable.WeightAffectedMovementDataTable'"));
 	WeightChange();

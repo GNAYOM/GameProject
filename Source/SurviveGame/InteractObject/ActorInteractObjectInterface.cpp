@@ -147,6 +147,11 @@ void AActorInteractObjectInterface::SetConnectionWithInteractObject()
 {
 }
 
+void AActorInteractObjectInterface::SetAsPlayerEquippedInteractObject()
+{
+	
+}
+
 void AActorInteractObjectInterface::InitSocketPanel()
 {
 }

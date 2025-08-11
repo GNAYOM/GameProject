@@ -221,6 +221,12 @@ void AActorInteractObject::SetNewInteractObjectSystem()
 	CurrentInteractObjectSystem = CurrentInteractObjectSystem -> NewInteractObjectSystem;
 }
 
+void AActorInteractObject::SetAsPlayerEquippedInteractObject()
+{
+	MainPlayerState->PlayerPossessedInteractManagerComponent ->InteractManagerComponentStatus = UseEquipment;
+	MainPlayerState->PlayerPossessedInteractManagerComponent ->EquippedInteractObject = this;
+}
+
 void AActorInteractObject::InitSocketPanel()
 {
 	int tmp_ColIndex = 0;

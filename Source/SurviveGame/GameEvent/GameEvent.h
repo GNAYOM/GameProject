@@ -70,6 +70,7 @@ public:
 	bool EventFlagTrue = true;
 	bool EventFlagFalse = false;
 	bool IsConnected = false;
+	bool IsEquipped = false;
 	bool EventFlag0 = false;
 	bool EventFlag1 = false;
 	bool EventFlag2 = false;

@@ -560,18 +560,48 @@ void AGameEvent::CollectableBehavior()
 	//UE_LOG(LogTemp,Warning,TEXT("CollectableItemBehaviorStart"));
 	//BehaviorStatusChange(TEXT("InputDetection"));
 	//UE_LOG(LogTemp,Warning,TEXT("%d"),MotherIOInterface->Option1JustPressed);
-	if(MotherIOInterface->Option1JustPressed && IsConnected == false)
+	if(IsEquipped == false)
 	{
-		MotherIOInterface->MergeWithPlayerPossessedInteractObjectSystem();
-		UE_LOG(LogTemp,Warning,TEXT("PickedUp"));
-		IsConnected = true;
+		if(MotherIOInterface->Option1JustPressed && IsConnected == false)
+		{
+			MotherIOInterface->MergeWithPlayerPossessedInteractObjectSystem();
+			UE_LOG(LogTemp,Warning,TEXT("InBackStorage"));
+			IsConnected = true;
+		}
+		if(MotherIOInterface->Option2JustPressed && IsConnected == true)
+		{
+			UE_LOG(LogTemp,Warning,TEXT("Disconnect"))
+			MotherIOInterface->SeperateFromPlayerPossessedInteractObjectSystem();
+			IsConnected = false;
+		}
+		if(MotherIOInterface->Option3JustPressed)
+		{
+			if(IsConnected == true)
+			{
+				IsConnected = false;
+				MotherIOInterface->SeperateFromPlayerPossessedInteractObjectSystem();
+			}
+			MotherIOInterface->SetAsPlayerEquippedInteractObject();
+			IsEquipped = true;
+			BehaviorStatusChange("EquippedCollectableItem");
+		}
 	}
-	if(MotherIOInterface->Option2JustPressed && IsConnected == true)
+	else//EquippedBehavior
 	{
-		UE_LOG(LogTemp,Warning,TEXT("Disconnect"))
-		MotherIOInterface->SeperateFromPlayerPossessedInteractObjectSystem();
-		IsConnected = false;
+		if(MotherIOInterface->Option1JustPressed)
+		{
+			UE_LOG(LogTemp,Warning,TEXT("UseEquipped"))
+		}
+		/*if(MotherIOInterface->Option2JustPressed)
+		{
+			UE_LOG(LogTemp,Warning,TEXT("BackToBackStorage"))
+		}
+		if(MotherIOInterface->Option3JustPressed)
+		{
+			UE_LOG(LogTemp,Warning,TEXT("BackToBackStorage"))
+		}*/
 	}
+
 	InteractObjectInputFlagRefresh();
 }
 

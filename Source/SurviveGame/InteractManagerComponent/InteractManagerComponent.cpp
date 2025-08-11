@@ -49,7 +49,10 @@ void UInteractManagerComponent::InteractObjectSelection()
 	{
 		SelectInteractObjectFromBackSocket();
 	}
-
+	else if (InteractManagerComponentStatus == UseEquipment)
+	{
+		SelectedTargetInteractObject = EquippedInteractObject;
+	}
 	if(SelectedTargetInteractObject != NULL)
 		SelectedTargetInteractObject->IsSelectedByPlayer = true;//本次选中的物体被玩家选中的标志位设置为true
 	if(LastSelectedTargetInteractObject != NULL
@@ -135,6 +138,7 @@ void UInteractManagerComponent::InteractObjectInputDetected(int Input)
 	if(SelectedTargetInteractObject != NULL)
 	{
 		SelectedTargetInteractObject->ReleaseEventActively(Input);
+		
 		//GetAttachmentRootActor()->GetComponentByClass<UPhysicsConstraintComponent>()->ConstraintActor2 = InteractObjectsSorted[0];
 		
 	}
@@ -146,7 +150,7 @@ void UInteractManagerComponent::OnInteractObjectBeginOverlap(UPrimitiveComponent
 {
 	FString IOName = OtherActor->GetName();
 	UE_LOG(LogTemp, Warning, TEXT("BeginOverlap:%s"), *IOName);
-	AActorInteractObjectInterface* InsertNewInteractObject =  Cast<AActorInteractObject>(OtherActor);
+	AActorInteractObjectInterface* InsertNewInteractObject =  Cast<AActorInteractObjectInterface>(OtherActor);
 	InRangeInteractObjects.Add(InsertNewInteractObject);
 	//InsertNewInteractObject->ReleaseEventActive(1);
 }
@@ -156,7 +160,7 @@ void UInteractManagerComponent::OnInteractObjectEndOverlapEnd(UPrimitiveComponen
 {
 	FString IOName = OtherActor->GetName();
 	UE_LOG(LogTemp,Warning,TEXT("EndOverlap111:%s"),*IOName);
-	AActorInteractObjectInterface* InsertNewInteractObject =  Cast<AActorInteractObject>(OtherActor);
+	AActorInteractObjectInterface* InsertNewInteractObject =  Cast<AActorInteractObjectInterface>(OtherActor);
 	InRangeInteractObjects.Remove(InsertNewInteractObject);
 }
 

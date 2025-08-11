@@ -102,6 +102,8 @@ public:
 	virtual void SeperateFromSourceInteractObject();
 	virtual void SetNewInteractObjectSystem();
 	virtual void SetConnectionWithInteractObject();
+	//PlayerEquip
+	virtual void SetAsPlayerEquippedInteractObject();
 	//InitSocket
 	virtual void InitSocketPanel();
 	//CameraCollosion
