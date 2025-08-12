@@ -101,11 +101,16 @@ void ABaseCharacter::Option4Selected()
 
 void ABaseCharacter::SetSelectFromBackSocket()
 {
-	if(InteractManagerComponent->InteractManagerComponentStatus != InteractManagerComponentStatusEnum::SelectFromPlayerBackSocket)
-		InteractManagerComponent->InteractManagerComponentStatus =  InteractManagerComponentStatusEnum::SelectFromPlayerBackSocket;
+	if(InteractManagerComponent->InteractManagerComponentStatus != SelectFromPlayerBackSocket)
+	{
+		if(InteractManagerComponent->InteractManagerComponentStatus == BlockingUseEquipment)
+			InteractManagerComponent->EquippedInteractObject = NULL;
+		InteractManagerComponent->InteractManagerComponentStatus =  SelectFromPlayerBackSocket;
+	}
+
 	else
 	{
-		InteractManagerComponent->InteractManagerComponentStatus = InteractManagerComponentStatusEnum::SelectByRange;
+		InteractManagerComponent->InteractManagerComponentStatus = SelectByRange;
 	}
 }
 

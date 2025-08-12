@@ -49,7 +49,7 @@ void UInteractManagerComponent::InteractObjectSelection()
 	{
 		SelectInteractObjectFromBackSocket();
 	}
-	else if (InteractManagerComponentStatus == UseEquipment)
+	else if (InteractManagerComponentStatus == BlockingUseEquipment)
 	{
 		SelectedTargetInteractObject = EquippedInteractObject;
 	}

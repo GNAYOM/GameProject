@@ -7,6 +7,7 @@
 #include "SurviveGame/InteractObject/InteractObjectProperty.h"
 #include "SurviveGame/InteractObject/InteractObjectSocket.h"
 #include "SurviveGame/InteractObject/InteractObjectPlug.h"
+#include "SurviveGame/InteractObject/EquipmentAbility/EquipmentAbilityInterface.h"
 #include "ActorInteractObjectInterface.generated.h"
 
 struct TargetSocketInfo
@@ -84,6 +85,7 @@ public:
 	bool Option2JustPressed = false;
 	bool Option3JustPressed = false;
 	bool Option4JustPressed = false;
+
 	// Called to bind functionality to input
 	void UpdateBehaviorStatus(FString NewItemStatus);
 	void UpdateInitialProperties(FString NewScript);
@@ -103,7 +105,12 @@ public:
 	virtual void SetNewInteractObjectSystem();
 	virtual void SetConnectionWithInteractObject();
 	//PlayerEquip
-	virtual void SetAsPlayerEquippedInteractObject();
+	virtual void SetAsPlayerBlockingEquippedInteractObject();
+	virtual void ClearPlayerBlockingEquippedInteractObject();
+	//EquipmentAbility
+	UPROPERTY()
+	UEquipmentAbilityInterface* EquipmentAbility;
+	virtual void UseEquipment();//WIP
 	//InitSocket
 	virtual void InitSocketPanel();
 	//CameraCollosion

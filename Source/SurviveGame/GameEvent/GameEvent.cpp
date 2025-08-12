@@ -581,25 +581,35 @@ void AGameEvent::CollectableBehavior()
 				IsConnected = false;
 				MotherIOInterface->SeperateFromPlayerPossessedInteractObjectSystem();
 			}
-			MotherIOInterface->SetAsPlayerEquippedInteractObject();
+			MotherIOInterface->SetAsPlayerBlockingEquippedInteractObject();
 			IsEquipped = true;
 			BehaviorStatusChange("EquippedCollectableItem");
 		}
 	}
-	else//EquippedBehavior
+	else//UseBlockingEquippedBehavior
 	{
 		if(MotherIOInterface->Option1JustPressed)
 		{
 			UE_LOG(LogTemp,Warning,TEXT("UseEquipped"))
+			MotherIOInterface->UseEquipment();
 		}
-		/*if(MotherIOInterface->Option2JustPressed)
+		if(MotherIOInterface->Option2JustPressed)
 		{
 			UE_LOG(LogTemp,Warning,TEXT("BackToBackStorage"))
+			IsEquipped = false;
+			MotherIOInterface ->MergeWithPlayerPossessedInteractObjectSystem();
+			MotherIOInterface ->ClearPlayerBlockingEquippedInteractObject();
+			IsConnected = true;
+			BehaviorStatusChange("CollectableItem");
 		}
 		if(MotherIOInterface->Option3JustPressed)
 		{
-			UE_LOG(LogTemp,Warning,TEXT("BackToBackStorage"))
-		}*/
+			UE_LOG(LogTemp,Warning,TEXT("UnloadEquipped"))
+			IsEquipped = false;
+			MotherIOInterface ->ClearPlayerBlockingEquippedInteractObject();
+			IsConnected = true;
+			BehaviorStatusChange("CollectableItem");
+		}
 	}
 
 	InteractObjectInputFlagRefresh();

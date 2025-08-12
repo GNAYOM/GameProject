@@ -13,6 +13,7 @@
 #include "SurviveGame/PlayerState/MainPlayerState.h"
 #include "SurviveGame/GameState/InteractObjectSystem.h"
 #include "SurviveGame/InteractManagerComponent/InteractManagerComponentInterface.h"
+#include "SurviveGame/InteractObject/EquipmentAbility/TestAbility/TestEquipmentAbility.h"
 #include "ActorInteractObject.generated.h"
 
 UCLASS()
@@ -70,7 +71,10 @@ public:
 	virtual void SeperateFromSourceInteractObject() override;
 	virtual void SetNewInteractObjectSystem() override;
 	//PlayerEquip
-	virtual void SetAsPlayerEquippedInteractObject() override;
+	virtual void SetAsPlayerBlockingEquippedInteractObject() override;
+	virtual void ClearPlayerBlockingEquippedInteractObject() override;
+	//EquipmentAbility
+	virtual void UseEquipment() override;
 	//Socket
 	virtual void InitSocketPanel() override;
 	TargetSocketInfo FindTargetSocket(SocketPanel* TargetSocketPanel);

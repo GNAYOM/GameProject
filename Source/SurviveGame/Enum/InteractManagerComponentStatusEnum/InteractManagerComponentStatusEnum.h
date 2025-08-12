@@ -7,7 +7,8 @@ enum InteractManagerComponentStatusEnum
 	SelectFromSystem = 3,
 	SelectByCursor = 4,
 	Source2TargetOperation = 5,
-	UseEquipment = 6
+	BlockingUseEquipment = 6,
+	SynchorizationUseEquipment = 7
 };
 enum SelectObjectType
 {

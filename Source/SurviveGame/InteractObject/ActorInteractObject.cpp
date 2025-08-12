@@ -23,7 +23,7 @@ AActorInteractObject::AActorInteractObject()
 	InteractObjectVolume -> SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	InteractObjectVolume -> SetCollisionProfileName(FName(TEXT("InteractObject")));
 	InteractObjectVolume ->SetupAttachment(RootComponent);
-	
+	EquipmentAbility = CreateDefaultSubobject<UTestEquipmentAbility>(TEXT("DefaultAbility"));
 }
 
 // Called when the game starts or when spawned
@@ -221,10 +221,21 @@ void AActorInteractObject::SetNewInteractObjectSystem()
 	CurrentInteractObjectSystem = CurrentInteractObjectSystem -> NewInteractObjectSystem;
 }
 
-void AActorInteractObject::SetAsPlayerEquippedInteractObject()
+void AActorInteractObject::SetAsPlayerBlockingEquippedInteractObject()
 {
-	MainPlayerState->PlayerPossessedInteractManagerComponent ->InteractManagerComponentStatus = UseEquipment;
+	MainPlayerState->PlayerPossessedInteractManagerComponent ->InteractManagerComponentStatus = BlockingUseEquipment;
 	MainPlayerState->PlayerPossessedInteractManagerComponent ->EquippedInteractObject = this;
+}
+
+void AActorInteractObject::ClearPlayerBlockingEquippedInteractObject()
+{
+	MainPlayerState->PlayerPossessedInteractManagerComponent ->EquippedInteractObject = NULL;
+	MainPlayerState->PlayerPossessedInteractManagerComponent->InteractManagerComponentStatus = SelectByRange;
+}
+
+void AActorInteractObject::UseEquipment()
+{
+	EquipmentAbility->UseEquipment();
 }
 
 void AActorInteractObject::InitSocketPanel()
