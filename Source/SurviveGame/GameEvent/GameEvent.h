@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "SurviveGame/InteractObject/ActorInteractObjectInterface.h"
 #include "stack"
+#include "SurviveGame/Enum/InteractObjectStatus/InteractObjectStatus.h"
 #include "GameEvent.generated.h"
 
 using namespace std;
@@ -143,6 +144,9 @@ public:
 		void CollectableBehavior();//EventID 009000000
 	//010 BackStorage
 		void EquipableBackStorageBehavior();//EventID 010000000
+	//011 InteractObjectStatusChange
+		void MotherIOInterfaceChangeStatus(int Status);
+		int  GetMotherIOInterfaceStatus();
 	// AffectCharacter
 	// AffectFields
 };

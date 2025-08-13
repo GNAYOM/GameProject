@@ -78,6 +78,9 @@ void AGameEvent::InteractObjectInputFlagRefresh()
 	MotherIOInterface->Option2JustPressed = false;
 	MotherIOInterface->Option3JustPressed = false;
 	MotherIOInterface->Option4JustPressed = false;
+	MotherIOInterface->CustomInput1 = false;
+	MotherIOInterface->CustomInput2 = false;
+	
 }
 
 //01 Test
@@ -560,55 +563,93 @@ void AGameEvent::CollectableBehavior()
 	//UE_LOG(LogTemp,Warning,TEXT("CollectableItemBehaviorStart"));
 	//BehaviorStatusChange(TEXT("InputDetection"));
 	//UE_LOG(LogTemp,Warning,TEXT("%d"),MotherIOInterface->Option1JustPressed);
-	if(IsEquipped == false)
+	if(GetMotherIOInterfaceStatus() == Default)//当处于默认状态
 	{
-		if(MotherIOInterface->Option1JustPressed && IsConnected == false)
+		if(MotherIOInterface->Option1JustPressed)//放入背包
 		{
-			MotherIOInterface->MergeWithPlayerPossessedInteractObjectSystem();
 			UE_LOG(LogTemp,Warning,TEXT("InBackStorage"));
-			IsConnected = true;
-		}
-		if(MotherIOInterface->Option2JustPressed && IsConnected == true)
-		{
-			UE_LOG(LogTemp,Warning,TEXT("Disconnect"))
-			MotherIOInterface->SeperateFromPlayerPossessedInteractObjectSystem();
-			IsConnected = false;
-		}
-		if(MotherIOInterface->Option3JustPressed)
-		{
-			if(IsConnected == true)
+			if(MotherIOInterface->MergeWithPlayerPossessedInteractObjectSystem())
 			{
-				IsConnected = false;
+				MotherIOInterfaceChangeStatus(Connected);
+				BehaviorStatusChange("InStorageCollectableItem");
+			}
+		}
+		if(MotherIOInterface->Option3JustPressed)//拿起
+		{
+			if(GetMotherIOInterfaceStatus() == Connected)
+			{
 				MotherIOInterface->SeperateFromPlayerPossessedInteractObjectSystem();
 			}
+			MotherIOInterface->ClearPlayerBlockingEquippedInteractObject();
 			MotherIOInterface->SetAsPlayerBlockingEquippedInteractObject();
-			IsEquipped = true;
+			MotherIOInterfaceChangeStatus(Equipped);
 			BehaviorStatusChange("EquippedCollectableItem");
 		}
 	}
-	else//UseBlockingEquippedBehavior
+	else if(GetMotherIOInterfaceStatus() == Connected)//当已在背包中
 	{
-		if(MotherIOInterface->Option1JustPressed)
+		if(MotherIOInterface->Option1JustPressed)//丢弃
+		{
+			UE_LOG(LogTemp,Warning,TEXT("Disconnect"))
+			MotherIOInterface->SeperateFromPlayerPossessedInteractObjectSystem();
+			BehaviorStatusChange("CollectableItem");
+			MotherIOInterfaceChangeStatus(Default);
+		}
+		if(MotherIOInterface->Option3JustPressed)//拿起
+		{
+			if(GetMotherIOInterfaceStatus() == Connected)
+			{
+				MotherIOInterface->SeperateFromPlayerPossessedInteractObjectSystem();
+			}
+			MotherIOInterface->ClearPlayerBlockingEquippedInteractObject();
+			MotherIOInterface->SetAsPlayerBlockingEquippedInteractObject();
+			MotherIOInterfaceChangeStatus(Equipped);
+			BehaviorStatusChange("EquippedCollectableItem");
+		}
+	}
+	else if(GetMotherIOInterfaceStatus() == Equipped)//当正在被装备
+	{
+		if(MotherIOInterface->Option1JustPressed)//使用
 		{
 			UE_LOG(LogTemp,Warning,TEXT("UseEquipped"))
 			MotherIOInterface->UseEquipment();
 		}
-		if(MotherIOInterface->Option2JustPressed)
+		if(MotherIOInterface->Option2JustPressed)//放入背包
 		{
 			UE_LOG(LogTemp,Warning,TEXT("BackToBackStorage"))
-			IsEquipped = false;
-			MotherIOInterface ->MergeWithPlayerPossessedInteractObjectSystem();
 			MotherIOInterface ->ClearPlayerBlockingEquippedInteractObject();
-			IsConnected = true;
-			BehaviorStatusChange("CollectableItem");
+			if( MotherIOInterface ->MergeWithPlayerPossessedInteractObjectSystem())
+			{
+				MotherIOInterfaceChangeStatus(Connected);
+				BehaviorStatusChange("InStorageCollectableItem");   
+			}
+			
+			else
+			{
+				MotherIOInterfaceChangeStatus(Default);
+				BehaviorStatusChange("CollectableItem");  
+			}
+	 
 		}
-		if(MotherIOInterface->Option3JustPressed)
+		if(MotherIOInterface->Option3JustPressed)//放下
 		{
 			UE_LOG(LogTemp,Warning,TEXT("UnloadEquipped"))
-			IsEquipped = false;
 			MotherIOInterface ->ClearPlayerBlockingEquippedInteractObject();
-			IsConnected = true;
+			MotherIOInterfaceChangeStatus(Default);
 			BehaviorStatusChange("CollectableItem");
+		}
+		if(MotherIOInterface->CustomInput1)//被其他装备挤占
+		{
+			if(MotherIOInterface ->MergeWithPlayerPossessedInteractObjectSystem())
+			{
+				MotherIOInterfaceChangeStatus(Connected);
+				BehaviorStatusChange("InStorageCollectableItem");	
+			}
+			else
+			{
+				MotherIOInterfaceChangeStatus(Default);
+				BehaviorStatusChange("CollectableItem");
+			}
 		}
 	}
 
@@ -624,6 +665,16 @@ void AGameEvent::EquipableBackStorageBehavior()
 		Destroy();
 	}
 	InteractObjectInputFlagRefresh();
+}
+
+void AGameEvent::MotherIOInterfaceChangeStatus(int Status)
+{
+	MotherIOInterface->InteractObjectStatus = Status;
+}
+
+int AGameEvent::GetMotherIOInterfaceStatus()
+{
+	return MotherIOInterface->InteractObjectStatus;
 }
 
 //08 WaitInput

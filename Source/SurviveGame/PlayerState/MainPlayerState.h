@@ -27,10 +27,13 @@ public:
 	float WeightLoad = 50;
 	FVector CurrentDirectionNormal;
 	FVector BackSocketCurrentLocation;
+	FVector RHandSocketCurrentLocation;
 	InteractObjectSystem* PossessedSystem;
 	SocketPanel* PossessedSocketPanel;
 	UPROPERTY()
 	UStaticMeshComponent* BackSocket;
+	UPROPERTY()
+	UStaticMeshComponent* RHandSocket;
 	UPROPERTY()
 	UInteractManagerComponentInterface* PlayerPossessedInteractManagerComponent;
 	void PrintSocketState();

@@ -23,6 +23,7 @@ public:
 	UInteractManagerComponentInterface();
 	//InteractManagerComponent Status
 	int InteractManagerComponentStatus;
+	int StatusBeforeSelectFromBackSocket;
 	//EquippedInteractObject
 	UPROPERTY()
 	AActorInteractObjectInterface* EquippedInteractObject;

@@ -8,6 +8,7 @@ AMainPlayerState::AMainPlayerState()
 	WeightLoad = 100000.0f;
 	PossessedSystem = new InteractObjectSystem();
 	BackSocket = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BackSocket"));
+	RHandSocket = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RHandSocket"));
 }
 
 void AMainPlayerState::PrintSocketState()

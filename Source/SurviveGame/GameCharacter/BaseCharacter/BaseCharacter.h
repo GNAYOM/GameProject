@@ -128,12 +128,16 @@ protected:
 	float MaxAcceleration;
 
 	//GameState
+	UPROPERTY()
 	AMainGameState* MainGameState;
+	UPROPERTY()  
 	AMainPlayerState* MainPlayerState;	
 public:
 	//PhysicsConstrain
-	UPROPERTY(EditAnywhere,Category="PhysicsConstrainSocket")
+	UPROPERTY(EditAnywhere,Category="Sockets")
 	UStaticMeshComponent* BackSocket;
+	UPROPERTY(EditAnywhere,Category="Sockets")
+	UStaticMeshComponent* RHandSocket;
 	//CameraComponents
 	UPROPERTY(EditAnywhere,Category="Camera")
 	USpringArmComponent* CamSpringArm;

@@ -90,6 +90,7 @@ void AActorInteractObject::ReleaseEventActively(int Input)
 	//UPhysicsConstraintComponent* TMP = MainCharacter->FindComponentByClass<UPhysicsConstraintComponent>();
 	//PrimitiveComponent -> SetSimulatePhysics(false);
 	//A->UpdateConstraintFrames();
+	
 	/*UPhysicsConstraintComponent* Aa =Cast<UPhysicsConstraintComponent>( AddComponentByClass(UPhysicsConstraintComponent::StaticClass()
 		,true
 		,GetTransform(),true));
@@ -103,6 +104,7 @@ void AActorInteractObject::ReleaseEventActively(int Input)
 	Aa->InitComponentConstraint();
 	FinishAddComponent(Aa,true,GetTransform());*/
 	//FinishAddComponent(A,false,FTransform::Identity);
+	
 	/*A->ConstraintActor2 = this;
 	A->InitComponentConstraint();
 	A->UpdateConstraintFrames();*/
@@ -113,6 +115,11 @@ void AActorInteractObject::ReleaseEventActively(int Input)
 FVector AActorInteractObject::GetPlayerBackSocketPosition()
 {
 	return MainPlayerState->BackSocketCurrentLocation;
+}
+
+FVector AActorInteractObject::GetPlayerRHandSocketPosition()
+{
+	return MainPlayerState->RHandSocketCurrentLocation;
 }
 
 FRotator AActorInteractObject::GetPlayerDirectionRotator()
@@ -141,10 +148,10 @@ void AActorInteractObject::SetPlayerPossessedInteractObjectSystem()
 	
 }
 
-void AActorInteractObject::MergeWithPlayerPossessedInteractObjectSystem()
+bool AActorInteractObject::MergeWithPlayerPossessedInteractObjectSystem()
 {
-	if(MainPlayerState->PossessedSocketPanel == NULL)
-		return;
+	if(MainPlayerState->PossessedSocketPanel == NULL)//如果没有背包
+		return false;
 	CurrentSocketInfo = FindTargetSocket(MainPlayerState->PossessedSocketPanel);
 	if(CurrentSocketInfo.BeginMerge)
 	{
@@ -176,6 +183,7 @@ void AActorInteractObject::MergeWithPlayerPossessedInteractObjectSystem()
 			,Tmp_BackStorageIndex,Tmp_ConnectObject2Index);
 	}
 	SetSocketsOccupied(CurrentSocketInfo.SocketRowIndex,CurrentSocketInfo.SocketColIndex);
+	return true;
 }
 
 void AActorInteractObject::MergeWithSourceInteractObject()
@@ -223,14 +231,34 @@ void AActorInteractObject::SetNewInteractObjectSystem()
 
 void AActorInteractObject::SetAsPlayerBlockingEquippedInteractObject()
 {
+	UE_LOG(LogTemp,Warning,TEXT("EquipmentAttached"));
+	SetActorLocation(this->GetPlayerRHandSocketPosition());
+	SetActorRotation(this->GetPlayerDirectionRotator());
+	PrimitiveComponent->SetSimulatePhysics(false);
+	PrimitiveComponent -> SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
+	IgnoreCamera = true;
+	AttachToComponent(this->GetPlayerBackSocketComponent(),FAttachmentTransformRules::KeepWorldTransform);
 	MainPlayerState->PlayerPossessedInteractManagerComponent ->InteractManagerComponentStatus = BlockingUseEquipment;
 	MainPlayerState->PlayerPossessedInteractManagerComponent ->EquippedInteractObject = this;
 }
 
 void AActorInteractObject::ClearPlayerBlockingEquippedInteractObject()
 {
+	if(MainPlayerState->PlayerPossessedInteractManagerComponent->EquippedInteractObject == NULL)
+		return;
+	if(MainPlayerState->PlayerPossessedInteractManagerComponent->EquippedInteractObject !=this)
+	{
+		MainPlayerState->PlayerPossessedInteractManagerComponent->EquippedInteractObject
+		->CustomInput1 = true;
+	}
+	UE_LOG(LogTemp,Warning,TEXT("EquipmentDetached"));
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	MainPlayerState->PlayerPossessedInteractManagerComponent->EquippedInteractObject->
+	PrimitiveComponent->SetSimulatePhysics(true);
+	MainPlayerState->PlayerPossessedInteractManagerComponent->EquippedInteractObject->
+	IgnoreCamera = false;
 	MainPlayerState->PlayerPossessedInteractManagerComponent ->EquippedInteractObject = NULL;
-	MainPlayerState->PlayerPossessedInteractManagerComponent->InteractManagerComponentStatus = SelectByRange;
+	MainPlayerState->PlayerPossessedInteractManagerComponent ->InteractManagerComponentStatus = SelectByRange;
 }
 
 void AActorInteractObject::UseEquipment()

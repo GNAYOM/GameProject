@@ -112,6 +112,11 @@ FRotator AActorInteractObjectInterface::GetPlayerDirectionRotator()
 	return FRotator(0,0,0);
 }
 
+FVector AActorInteractObjectInterface::GetPlayerRHandSocketPosition()
+{
+	return FVector(0,0,0);
+}
+
 UStaticMeshComponent* AActorInteractObjectInterface::GetPlayerBackSocketComponent()
 {
 	UStaticMeshComponent* Default = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Default"));
@@ -123,8 +128,9 @@ void AActorInteractObjectInterface::SetPlayerPossessedInteractObjectSystem()
 	
 }
 
-void AActorInteractObjectInterface::MergeWithPlayerPossessedInteractObjectSystem()
+bool AActorInteractObjectInterface::MergeWithPlayerPossessedInteractObjectSystem()
 {
+	return false;
 }
 
 void AActorInteractObjectInterface::MergeWithSourceInteractObject()

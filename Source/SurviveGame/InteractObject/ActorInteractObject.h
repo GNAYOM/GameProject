@@ -61,11 +61,12 @@ public:
 	UPhysicsConstraintComponent* A;
 	//Get/Set PlayerState
 	FVector GetPlayerBackSocketPosition() override;
+	FVector GetPlayerRHandSocketPosition() override;
 	FRotator GetPlayerDirectionRotator() override;
 	UStaticMeshComponent* GetPlayerBackSocketComponent() override;
 	//Set InteractObjectSystem
 	virtual void SetPlayerPossessedInteractObjectSystem() override;
-	virtual void MergeWithPlayerPossessedInteractObjectSystem() override;
+	virtual bool MergeWithPlayerPossessedInteractObjectSystem() override;
 	virtual void MergeWithSourceInteractObject() override;
 	virtual void SeperateFromPlayerPossessedInteractObjectSystem() override;
 	virtual void SeperateFromSourceInteractObject() override;

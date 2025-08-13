@@ -28,7 +28,8 @@ ABaseCharacter::ABaseCharacter()
 	
 	BackSocket = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BackSocket"));
 	BackSocket->SetupAttachment(GetMesh());
-
+	RHandSocket = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RHandSocket"));
+	RHandSocket->SetupAttachment(GetMesh());
 	CharacterInputMapping = CreateDefaultSubobject<UInputMappingContext>(TEXT("InputMapping"));
 	InteractObjectDetector = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractObjectDetector"));
 	InteractObjectDetector -> SetupAttachment(GetMesh());
@@ -104,13 +105,19 @@ void ABaseCharacter::SetSelectFromBackSocket()
 	if(InteractManagerComponent->InteractManagerComponentStatus != SelectFromPlayerBackSocket)
 	{
 		if(InteractManagerComponent->InteractManagerComponentStatus == BlockingUseEquipment)
-			InteractManagerComponent->EquippedInteractObject = NULL;
+		{
+			InteractManagerComponent->StatusBeforeSelectFromBackSocket = BlockingUseEquipment;
+		}
+		if(InteractManagerComponent->InteractManagerComponentStatus == SelectByRange)
+		{
+			InteractManagerComponent->StatusBeforeSelectFromBackSocket = SelectByRange;
+		}
 		InteractManagerComponent->InteractManagerComponentStatus =  SelectFromPlayerBackSocket;
 	}
 
 	else
 	{
-		InteractManagerComponent->InteractManagerComponentStatus = SelectByRange;
+		InteractManagerComponent->InteractManagerComponentStatus = InteractManagerComponent->StatusBeforeSelectFromBackSocket;
 	}
 }
 
@@ -128,6 +135,7 @@ void ABaseCharacter::BeginPlay()
 	MainGameState = GetWorld()->GetAuthGameMode()->GetGameState<AMainGameState>();
 	MainPlayerState = GetWorld()->GetFirstPlayerController()->GetPlayerState<AMainPlayerState>(); 
 	MainPlayerState -> BackSocket = BackSocket;
+	MainPlayerState -> RHandSocket = RHandSocket; 
 	MainPlayerState -> PlayerPossessedInteractManagerComponent = InteractManagerComponent;
 	WeightAffectedMovementDataTable = LoadObject<UDataTable>(this
 		,TEXT("/Script/Engine.DataTable'/Game/GameContent/DataTable/Character/BaseCharacter/WeightSystem/WeightAffectedMovementDataTable.WeightAffectedMovementDataTable'"));
@@ -188,6 +196,7 @@ void ABaseCharacter::Tick(float DeltaTime)
 	//更新Player状态
 	{
 		MainPlayerState->BackSocketCurrentLocation = BackSocket->GetComponentLocation();
+		MainPlayerState->RHandSocketCurrentLocation = RHandSocket->GetComponentLocation();
 	}
 }
 

@@ -8,6 +8,8 @@
 #include "SurviveGame/InteractObject/InteractObjectSocket.h"
 #include "SurviveGame/InteractObject/InteractObjectPlug.h"
 #include "SurviveGame/InteractObject/EquipmentAbility/EquipmentAbilityInterface.h"
+#include "SurviveGame/Enum/InteractObjectStatus/InteractObjectStatus.h"
+#include "UObject/ReferenceChainSearch.h"
 #include "ActorInteractObjectInterface.generated.h"
 
 struct TargetSocketInfo
@@ -30,6 +32,7 @@ protected:
 	virtual void BeginPlay() override;
 	
 public:
+	
 	UPROPERTY()
 	UPrimitiveComponent* PrimitiveComponent;
 	// Called every frame
@@ -80,12 +83,17 @@ public:
 	InteractObjectProperty Property;
 	UPROPERTY(EditAnywhere)
 	float Weight;
+	//InteractObjectStatus
+	int InteractObjectStatus = Default;
 	//ForKeyDetection
 	bool Option1JustPressed = false;
 	bool Option2JustPressed = false;
 	bool Option3JustPressed = false;
 	bool Option4JustPressed = false;
-
+	//CustomInput
+	bool CustomInput1 = false;
+	bool CustomInput2 = false;
+	
 	// Called to bind functionality to input
 	void UpdateBehaviorStatus(FString NewItemStatus);
 	void UpdateInitialProperties(FString NewScript);
@@ -95,10 +103,11 @@ public:
 	//Get/Set Status
 	virtual FVector GetPlayerBackSocketPosition();
 	virtual FRotator GetPlayerDirectionRotator();
+	virtual FVector GetPlayerRHandSocketPosition();
 	virtual UStaticMeshComponent* GetPlayerBackSocketComponent();
 	//Set InteractObjectSystem
 	virtual void SetPlayerPossessedInteractObjectSystem();
-	virtual void MergeWithPlayerPossessedInteractObjectSystem();
+	virtual bool MergeWithPlayerPossessedInteractObjectSystem();
 	virtual void MergeWithSourceInteractObject();
 	virtual void SeperateFromPlayerPossessedInteractObjectSystem();
 	virtual void SeperateFromSourceInteractObject();
