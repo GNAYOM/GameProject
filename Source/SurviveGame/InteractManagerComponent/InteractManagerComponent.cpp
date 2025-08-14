@@ -43,13 +43,13 @@ void UInteractManagerComponent::InteractObjectSelection()
 {
 	if(InteractManagerComponentStatus == SelectByRange)
 	{
-		SelectInteractObjectByRange();
+		SelectedTargetInteractObject = SelectInteractObjectByRange();
 	}
 	else if (InteractManagerComponentStatus == SelectFromPlayerBackSocket)
 	{
-		SelectInteractObjectFromBackSocket();
+		SelectedTargetInteractObject = SelectInteractObjectFromBackSocket();
 	}
-	else if (InteractManagerComponentStatus == BlockingUseEquipment)
+	else if(InteractManagerComponentStatus == BlockingUseEquipment)
 	{
 		SelectedTargetInteractObject = EquippedInteractObject;
 	}
@@ -64,7 +64,7 @@ void UInteractManagerComponent::InteractObjectSelection()
 
 }
 
-void UInteractManagerComponent::SelectInteractObjectByRange()
+AActorInteractObjectInterface* UInteractManagerComponent::SelectInteractObjectByRange()
 {
 	tmp_InteractObjectsSorted = InRangeInteractObjects;
 	float tmp_CurrentDistanceA = 0.f;
@@ -97,32 +97,29 @@ void UInteractManagerComponent::SelectInteractObjectByRange()
 	InteractObjectsSorted = tmp_InteractObjectsSorted;
 	if(!InteractObjectsSorted.IsEmpty())//如果排序队列不为空
 	{
-		SelectedTargetInteractObject = InteractObjectsSorted[0];//选中最近的物体
+		return InteractObjectsSorted[0];//选中最近的物体
 	}
 	else
 	{
-		SelectedTargetInteractObject = NULL;
+		return  NULL;
 	}
 
 	// ...
 }
 
-void UInteractManagerComponent::SelectInteractObjectFromBackSocket()
+AActorInteractObjectInterface* UInteractManagerComponent::SelectInteractObjectFromBackSocket()
 {
 	if(MainPlayerState->PossessedSystem->TotalInteractObjects.Num() > 1)
 	{
 		for(AActorInteractObjectInterface* I : MainPlayerState->PossessedSystem->TotalInteractObjects)
 			if (I->BehaviorStatus != "EquippedBackStorage")
 			{
-				SelectedTargetInteractObject = I;
-				break;
+				return I;
 			}
+		return NULL;
 	}
-	else
-	{
-		SelectedTargetInteractObject = NULL;
+	return NULL;
 		//MainPlayerState->InteractManagerComponentStatus = SelectByRange;
-	}
 }
 
 // Called every frame
@@ -135,13 +132,21 @@ void UInteractManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 void UInteractManagerComponent::InteractObjectInputDetected(int Input)
 {
 	
-	if(SelectedTargetInteractObject != NULL)
+	if (InteractManagerComponentStatus == BlockingUseEquipment)
 	{
-		SelectedTargetInteractObject->ReleaseEventActively(Input);
-		
-		//GetAttachmentRootActor()->GetComponentByClass<UPhysicsConstraintComponent>()->ConstraintActor2 = InteractObjectsSorted[0];
-		
+		EquippedInteractObject ->ReleaseEventActively(Input);
 	}
+	else
+	{
+		if(SelectedTargetInteractObject != NULL)
+		{
+			SelectedTargetInteractObject->ReleaseEventActively(Input);
+			//GetAttachmentRootActor()->GetComponentByClass<UPhysicsConstraintComponent>()->ConstraintActor2 = InteractObjectsSorted[0];
+		
+		}
+	}
+	
+
 }
 
 void UInteractManagerComponent::OnInteractObjectBeginOverlap(UPrimitiveComponent* OverlappedComponent,

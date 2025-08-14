@@ -127,6 +127,9 @@ public:
 	//SourceInteractObject
 	UPROPERTY()
 	AActorInteractObjectInterface* SourceInteractObject;
+	//TargetInteractObject
+	UPROPERTY()
+	AActorInteractObjectInterface* TargetInteractObjectByRange;
 	//Test
 	virtual void LogHello();
 	

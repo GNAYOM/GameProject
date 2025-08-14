@@ -49,8 +49,8 @@ protected:
 	UPROPERTY()
 	AActorInteractObjectInterface* SelectedTargetInteractObject;
 	void InteractObjectSelection();
-	void SelectInteractObjectByRange();
-	void SelectInteractObjectFromBackSocket();
+	AActorInteractObjectInterface* SelectInteractObjectByRange();
+	AActorInteractObjectInterface* SelectInteractObjectFromBackSocket();
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
