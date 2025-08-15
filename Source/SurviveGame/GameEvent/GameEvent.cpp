@@ -83,6 +83,11 @@ void AGameEvent::InteractObjectInputFlagRefresh()
 	
 }
 
+void AGameEvent::TargetInteractObjectRefresh()
+{
+	MotherIOInterface->TargetInteractObjectByRange = NULL;
+}
+
 //01 Test
 void AGameEvent::Test00001()
 {
@@ -574,6 +579,10 @@ void AGameEvent::CollectableBehavior()
 				BehaviorStatusChange("InStorageCollectableItem");
 			}
 		}
+		if(MotherIOInterface->Option2JustPressed)
+		{
+			UE_LOG(LogTemp,Warning,TEXT("Combine"))
+		}
 		if(MotherIOInterface->Option3JustPressed)//拿起
 		{
 			if(GetMotherIOInterfaceStatus() == Connected)
@@ -595,6 +604,10 @@ void AGameEvent::CollectableBehavior()
 			BehaviorStatusChange("CollectableItem");
 			MotherIOInterfaceChangeStatus(Default);
 		}
+		if(MotherIOInterface->Option2JustPressed)
+		{
+			UE_LOG(LogTemp,Warning,TEXT("Combine"))
+		}
 		if(MotherIOInterface->Option3JustPressed)//拿起
 		{
 			if(GetMotherIOInterfaceStatus() == Connected)
@@ -614,7 +627,18 @@ void AGameEvent::CollectableBehavior()
 			UE_LOG(LogTemp,Warning,TEXT("UseEquipped"))
 			MotherIOInterface->UseEquipment();
 		}
-		if(MotherIOInterface->Option2JustPressed)//放入背包
+		if(MotherIOInterface->Option2JustPressed)
+		{
+			UE_LOG(LogTemp,Warning,TEXT("Combine"))
+		}
+		if(MotherIOInterface->Option3JustPressed)//放下
+		{
+			UE_LOG(LogTemp,Warning,TEXT("UnloadEquipped"))
+			MotherIOInterface ->ClearPlayerBlockingEquippedInteractObject();
+			MotherIOInterfaceChangeStatus(Default);
+			BehaviorStatusChange("CollectableItem");
+		}
+		if(MotherIOInterface->Option4JustPressed)//放入背包
 		{
 			UE_LOG(LogTemp,Warning,TEXT("BackToBackStorage"))
 			MotherIOInterface ->ClearPlayerBlockingEquippedInteractObject();
@@ -630,13 +654,6 @@ void AGameEvent::CollectableBehavior()
 				BehaviorStatusChange("CollectableItem");  
 			}
 	 
-		}
-		if(MotherIOInterface->Option3JustPressed)//放下
-		{
-			UE_LOG(LogTemp,Warning,TEXT("UnloadEquipped"))
-			MotherIOInterface ->ClearPlayerBlockingEquippedInteractObject();
-			MotherIOInterfaceChangeStatus(Default);
-			BehaviorStatusChange("CollectableItem");
 		}
 		if(MotherIOInterface->CustomInput1)//被其他装备挤占
 		{
@@ -654,6 +671,7 @@ void AGameEvent::CollectableBehavior()
 	}
 
 	InteractObjectInputFlagRefresh();
+	TargetInteractObjectRefresh();
 }
 
 void AGameEvent::EquipableBackStorageBehavior()
@@ -665,6 +683,7 @@ void AGameEvent::EquipableBackStorageBehavior()
 		Destroy();
 	}
 	InteractObjectInputFlagRefresh();
+	TargetInteractObjectRefresh();
 }
 
 void AGameEvent::MotherIOInterfaceChangeStatus(int Status)

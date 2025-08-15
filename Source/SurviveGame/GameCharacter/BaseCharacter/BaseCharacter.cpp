@@ -155,15 +155,13 @@ void ABaseCharacter::Tick(float DeltaTime)
 		CameraInput.Y = 0.f;
 		CameraInput.X = 0.f;
 	}//cam delta pitch rotator
-	if(MainPlayerState->PossessedSystem->ConnectionMatrix.Num() != 0)
-	MainGameState->PrintConnectionMatrix(*MainPlayerState->PossessedSystem);
-	MainPlayerState->PrintSocketState();
+	//if(MainPlayerState->PossessedSystem->ConnectionMatrix.Num() != 0)
+	//MainGameState->PrintConnectionMatrix(*MainPlayerState->PossessedSystem);
+	//MainPlayerState->PrintSocketState();
 	/*{
 		FRotator CamDeltaRotator = CamSpringArm->GetComponentRotation();
 
 		CamSpringArm->SetWorldRotation(CamDeltaRotator);
-		
-		
 	}*///cam delta yaw rotator
 	//设置操控角色新状态并将记录新增状态的变量归零
 	{

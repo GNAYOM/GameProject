@@ -67,8 +67,10 @@ public:
 	//Set InteractObjectSystem
 	virtual void SetPlayerPossessedInteractObjectSystem() override;
 	virtual bool MergeWithPlayerPossessedInteractObjectSystem() override;
+	virtual bool MergeWithTargetInteractObject() override;
 	virtual void MergeWithSourceInteractObject() override;
 	virtual void SeperateFromPlayerPossessedInteractObjectSystem() override;
+	virtual bool SeperateWithTargetInteractObject() override;
 	virtual void SeperateFromSourceInteractObject() override;
 	virtual void SetNewInteractObjectSystem() override;
 	//PlayerEquip

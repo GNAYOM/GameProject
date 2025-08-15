@@ -133,12 +133,22 @@ bool AActorInteractObjectInterface::MergeWithPlayerPossessedInteractObjectSystem
 	return false;
 }
 
+bool AActorInteractObjectInterface::MergeWithTargetInteractObject()
+{
+	return false;
+}
+
 void AActorInteractObjectInterface::MergeWithSourceInteractObject()
 {
 }
 
 void AActorInteractObjectInterface::SeperateFromPlayerPossessedInteractObjectSystem()
 {
+}
+
+bool AActorInteractObjectInterface::SeperateWithTargetInteractObject()
+{
+	return false;		
 }
 
 void AActorInteractObjectInterface::SeperateFromSourceInteractObject()

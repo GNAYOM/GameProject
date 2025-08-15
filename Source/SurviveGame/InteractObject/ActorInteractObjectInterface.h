@@ -108,8 +108,10 @@ public:
 	//Set InteractObjectSystem
 	virtual void SetPlayerPossessedInteractObjectSystem();
 	virtual bool MergeWithPlayerPossessedInteractObjectSystem();
+	virtual bool MergeWithTargetInteractObject();
 	virtual void MergeWithSourceInteractObject();
 	virtual void SeperateFromPlayerPossessedInteractObjectSystem();
+	virtual bool SeperateWithTargetInteractObject();
 	virtual void SeperateFromSourceInteractObject();
 	virtual void SetNewInteractObjectSystem();
 	virtual void SetConnectionWithInteractObject();

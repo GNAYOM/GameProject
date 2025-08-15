@@ -52,6 +52,7 @@ void UInteractManagerComponent::InteractObjectSelection()
 	else if(InteractManagerComponentStatus == BlockingUseEquipment)
 	{
 		SelectedTargetInteractObject = EquippedInteractObject;
+		SelectedTargetInteractObject->TargetInteractObjectByRange = SelectInteractObjectByRange();
 	}
 	if(SelectedTargetInteractObject != NULL)
 		SelectedTargetInteractObject->IsSelectedByPlayer = true;//本次选中的物体被玩家选中的标志位设置为true

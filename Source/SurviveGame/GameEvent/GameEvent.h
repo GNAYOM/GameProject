@@ -103,6 +103,8 @@ public:
 	void ConditionRegisterInitialize();
 	//InteractObjectInputFlagRefresh
 	void InteractObjectInputFlagRefresh();
+	//TargetInteractObjectRefresh
+	void TargetInteractObjectRefresh();
 	//Events
 	//01 Test
 		//IOID 0001
