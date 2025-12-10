@@ -17,6 +17,8 @@ struct TargetSocketInfo
 	bool BeginMerge;
 	int SocketRowIndex;
 	int SocketColIndex;
+	SocketPanel* AttachedSocketPanel;
+	Socket* CurrentSocket;
 };
 UCLASS(Abstract)
 class SURVIVEGAME_API AActorInteractObjectInterface : public AActor
@@ -108,13 +110,15 @@ public:
 	//Set InteractObjectSystem
 	virtual void SetPlayerPossessedInteractObjectSystem();
 	virtual bool MergeWithPlayerPossessedInteractObjectSystem();
-	virtual bool MergeWithTargetInteractObject();
+	virtual bool MergeWithTargetInteractObjectSystem();
 	virtual void MergeWithSourceInteractObject();
 	virtual void SeperateFromPlayerPossessedInteractObjectSystem();
-	virtual bool SeperateWithTargetInteractObject();
+	virtual bool SeperateFromTargetInteractObjectSystem();
 	virtual void SeperateFromSourceInteractObject();
 	virtual void SetNewInteractObjectSystem();
 	virtual void SetConnectionWithInteractObject();
+	//Get InteractObjectSysmtem
+	virtual TArray<AActorInteractObjectInterface*> GetInteractObjectsInCurrentSystem();
 	//PlayerEquip
 	virtual void SetAsPlayerBlockingEquippedInteractObject();
 	virtual void ClearPlayerBlockingEquippedInteractObject();

@@ -2,6 +2,8 @@
 
 
 #include "ActorInteractObject.h"
+
+#include "InteractObjectInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "SurviveGame/DataStructure/InteractObjectStructure/BehaviorStructure/FTableRowBehavior.h"
 #include "SurviveGame/GameCharacter/BaseCharacter/BaseCharacter.h"
@@ -182,46 +184,57 @@ bool AActorInteractObject::MergeWithPlayerPossessedInteractObjectSystem()
 		MainGameState->MergeInteractObjectSystem(MainPlayerState->PossessedSystem,CurrentInteractObjectSystem
 			,Tmp_BackStorageIndex,Tmp_ConnectObject2Index);
 	}
-	SetSocketsOccupied(CurrentSocketInfo.SocketRowIndex,CurrentSocketInfo.SocketColIndex);
+	SetSocketsOccupied(MainPlayerState->PossessedSystem->PlayerBackStorage,CurrentSocketInfo.SocketRowIndex,CurrentSocketInfo.SocketColIndex);
 	return true;
 }
 
-bool AActorInteractObject::MergeWithTargetInteractObject()
+bool AActorInteractObject::MergeWithTargetInteractObjectSystem()
 {
-	CurrentSocketInfo = FindTargetSocket(&TargetInteractObjectByRange->PossessedSocketPanel);
+	if(TargetInteractObjectByRange == NULL)
+		return false;
+	AActorInteractObjectInterface* Tmp_Storage = NULL;
+	TArray<AActorInteractObjectInterface*> TargetSystemInteractObjects = TargetInteractObjectByRange->GetInteractObjectsInCurrentSystem();
+	for(AActorInteractObjectInterface* I: TargetSystemInteractObjects)
+	{
+		if(I->BehaviorStatus.Contains("BackStorage") != false)
+			Tmp_Storage = I;
+	}
+	if(Tmp_Storage == NULL)
+		return false;
+	if(Tmp_Storage!=NULL)
+	UE_LOG(LogTemp,Warning,TEXT("StorageFound!"))
+	CurrentSocketInfo = FindTargetSocket(&Tmp_Storage->PossessedSocketPanel);
 	if(!CurrentSocketInfo.BeginMerge)//如果没有背包
 		return false;
 	if(CurrentSocketInfo.BeginMerge)
 	{
 		int Tmp_StorageIndex = 0;
 		int Tmp_ConnectObject2Index = 0;
-		AActorInteractObjectInterface* Tmp_Storage = NULL;
-		for(int i = 0;AActorInteractObjectInterface* I: MainPlayerState->PossessedSystem->TotalInteractObjects)
+		for(int i = 0;AActorInteractObjectInterface* I: TargetSystemInteractObjects)
 		{
-			if(I->BehaviorStatus.Equals("EquippedBackStorage"))
+			if(I->BehaviorStatus.Contains("BackStorage") != false)
 				Tmp_StorageIndex = i;
 			i++;
 		}
-		for(int i = 0;AActorInteractObjectInterface* I: CurrentInteractObjectSystem->TotalInteractObjects)
+		for(int i = 0;AActorInteractObjectInterface* I: TargetSystemInteractObjects)
 		{
 			if(I == this)
 				Tmp_ConnectObject2Index = i;
 			i++;
 		}
-		UE_LOG(LogTemp,Warning,TEXT("BackStorageAttached"));
 		PrimitiveComponent->SetSimulatePhysics(false);
 		PrimitiveComponent -> SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
 		IgnoreCamera = true;
-		AttachToComponent(MainPlayerState->PossessedSystem->PlayerBackStorage->FindComponentByClass<USkeletalMeshComponent>()
+		AttachToComponent(Tmp_Storage->FindComponentByClass<USkeletalMeshComponent>()
 			,FAttachmentTransformRules::SnapToTargetNotIncludingScale
-			,MainPlayerState->PossessedSocketPanel->
+			,Tmp_Storage->PossessedSocketPanel.
 			Panel[CurrentSocketInfo.SocketRowIndex][CurrentSocketInfo.SocketColIndex].SocketName);
 	
 
-		MainGameState->MergeInteractObjectSystem(MainPlayerState->PossessedSystem,CurrentInteractObjectSystem
+		MainGameState->MergeInteractObjectSystem(Cast<AActorInteractObject>(Tmp_Storage)->CurrentInteractObjectSystem,CurrentInteractObjectSystem
 			,Tmp_StorageIndex,Tmp_ConnectObject2Index);
 	}
-	SetSocketsOccupied(CurrentSocketInfo.SocketRowIndex,CurrentSocketInfo.SocketColIndex);
+	SetSocketsOccupied(Tmp_Storage,CurrentSocketInfo.SocketRowIndex,CurrentSocketInfo.SocketColIndex);
 	return true;
 }
 
@@ -232,7 +245,7 @@ void AActorInteractObject::MergeWithSourceInteractObject()
 
 void AActorInteractObject::SeperateFromPlayerPossessedInteractObjectSystem()
 {
-	if(Plug.CurrentSocket == NULL)
+	if(CurrentSocketInfo.CurrentSocket == NULL)
 		return;
 	int Tmp_BackStorageIndex = 0;
 	int Tmp_DisConnectObject2Index = 0;
@@ -258,9 +271,9 @@ void AActorInteractObject::SeperateFromPlayerPossessedInteractObjectSystem()
 	CurrentSocketInfo = TargetSocketInfo();
 }
 
-bool AActorInteractObject::SeperateWithTargetInteractObject()
+bool AActorInteractObject::SeperateFromTargetInteractObjectSystem()
 {
-	return Super::SeperateWithTargetInteractObject();
+	return Super::SeperateFromTargetInteractObjectSystem();
 }
 
 void AActorInteractObject::SeperateFromSourceInteractObject()
@@ -271,6 +284,11 @@ void AActorInteractObject::SeperateFromSourceInteractObject()
 void AActorInteractObject::SetNewInteractObjectSystem()
 {
 	CurrentInteractObjectSystem = CurrentInteractObjectSystem -> NewInteractObjectSystem;
+}
+
+TArray<AActorInteractObjectInterface*> AActorInteractObject::GetInteractObjectsInCurrentSystem()
+{
+	return CurrentInteractObjectSystem->TotalInteractObjects;
 }
 
 void AActorInteractObject::SetAsPlayerBlockingEquippedInteractObject()
@@ -379,11 +397,13 @@ void AActorInteractObject::InitSocketPanel()
 TargetSocketInfo AActorInteractObject::FindTargetSocket(SocketPanel* TargetSocketPanel)
 {
 	TargetSocketInfo tmp_TargetSocketInfo = TargetSocketInfo();
+	SocketPanel* tmp_AttachedSocketPanel = NULL;
 	bool tmp_BeginMerge = false;
 	bool tmp_OccupiedDetected = false;
 	bool tmp_OutOfRange = false;
 	int tmp_SocketRowIndex = 0;
 	int tmp_SocketColIndex = 0;
+	
 	for(int i = 0;i<TargetSocketPanel->Panel.Num();i++)
 	{
 		if(tmp_BeginMerge == true)
@@ -408,6 +428,7 @@ TargetSocketInfo AActorInteractObject::FindTargetSocket(SocketPanel* TargetSocke
 				tmp_SocketRowIndex = i;
 				tmp_SocketColIndex = j;
 				tmp_BeginMerge = true;
+				tmp_AttachedSocketPanel = TargetSocketPanel;
 				break;
 			}
 			tmp_OccupiedDetected = false;
@@ -417,18 +438,19 @@ TargetSocketInfo AActorInteractObject::FindTargetSocket(SocketPanel* TargetSocke
 	tmp_TargetSocketInfo.BeginMerge = tmp_BeginMerge;
 	tmp_TargetSocketInfo.SocketRowIndex = tmp_SocketRowIndex;
 	tmp_TargetSocketInfo.SocketColIndex = tmp_SocketColIndex;
+	tmp_TargetSocketInfo.AttachedSocketPanel = tmp_AttachedSocketPanel;
 	return tmp_TargetSocketInfo;
 }
 
-void AActorInteractObject::SetSocketsOccupied(int RowIndex,int ColIndex)
+void AActorInteractObject::SetSocketsOccupied(AActorInteractObjectInterface* TargetInteractObject,int RowIndex,int ColIndex)
 {
 	for(int k = 0;k<=Plug.PlugRowMaxIndex;k++)
 		for(int l = 0;l<=Plug.PlugColMaxIndex;l++)
 		{
-			MainPlayerState->PossessedSocketPanel->
+			TargetInteractObject->PossessedSocketPanel.
 				Panel[RowIndex+k][ColIndex+l].IsOccupied = true;
 		}
-	Plug.CurrentSocket = &MainPlayerState->PossessedSocketPanel->
+	CurrentSocketInfo.CurrentSocket = &TargetInteractObject->PossessedSocketPanel.
 		Panel[RowIndex][ColIndex];
 }
 
@@ -438,10 +460,11 @@ void AActorInteractObject::DisconnectFromSocket(int RowIndex,int ColIndex)
 	for(int k = 0;k<=Plug.PlugRowMaxIndex;k++)
 		for(int l = 0;l<=Plug.PlugColMaxIndex;l++)
 		{
-			MainPlayerState->PossessedSocketPanel->
-				Panel[RowIndex+k][ColIndex+l].IsOccupied = false;
+			CurrentSocketInfo.AttachedSocketPanel
+				->Panel[RowIndex+k][ColIndex+l].IsOccupied = false;
 		}
-	Plug.CurrentSocket = NULL;
+	CurrentSocketInfo.CurrentSocket = NULL;
+	CurrentSocketInfo.AttachedSocketPanel = NULL;
 }
 
 void AActorInteractObject::LogHello()
@@ -476,6 +499,8 @@ void AActorInteractObject::OnCamEndOverlapEnd(UPrimitiveComponent* OverlappedCom
 void AActorInteractObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if(TargetInteractObjectByRange!=NULL)
+		UE_LOG(LogTemp,Warning,TEXT("Target!=NULL"))
 }
 
 

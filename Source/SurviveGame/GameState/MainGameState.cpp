@@ -91,7 +91,9 @@ InteractObjectSystem* AMainGameState::MergeInteractObjectSystem(InteractObjectSy
 		MainPlayerState->PossessedSystem = NewInteractObjectSystem;
 	}
 	InteractObjectSystems.Remove(Source1);
+	delete(Source1);
 	InteractObjectSystems.Remove(Source2);
+	delete(Source2);
 	InteractObjectSystems.Add(NewInteractObjectSystem);
 	return NewInteractObjectSystem;
 }
@@ -150,6 +152,8 @@ InteractObjectSystem* AMainGameState::SeperateInteractObjectSystem(InteractObjec
 	
 	if (NewSystem1Total == Source1Total)
 	{
+		delete(NewInteractObjectSystem1);
+		delete(NewInteractObjectSystem2);
 		return Source1;
 	}
 	
@@ -215,6 +219,7 @@ InteractObjectSystem* AMainGameState::SeperateInteractObjectSystem(InteractObjec
 		}
 	}
 	InteractObjectSystems.Remove(Source1);
+	delete(Source1);
 	InteractObjectSystems.Add(NewInteractObjectSystem1);
 	InteractObjectSystems.Add(NewInteractObjectSystem2);
 	

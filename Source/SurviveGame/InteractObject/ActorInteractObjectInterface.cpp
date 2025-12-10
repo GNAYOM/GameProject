@@ -133,7 +133,7 @@ bool AActorInteractObjectInterface::MergeWithPlayerPossessedInteractObjectSystem
 	return false;
 }
 
-bool AActorInteractObjectInterface::MergeWithTargetInteractObject()
+bool AActorInteractObjectInterface::MergeWithTargetInteractObjectSystem()
 {
 	return false;
 }
@@ -146,7 +146,7 @@ void AActorInteractObjectInterface::SeperateFromPlayerPossessedInteractObjectSys
 {
 }
 
-bool AActorInteractObjectInterface::SeperateWithTargetInteractObject()
+bool AActorInteractObjectInterface::SeperateFromTargetInteractObjectSystem()
 {
 	return false;		
 }
@@ -162,6 +162,13 @@ void AActorInteractObjectInterface::SetNewInteractObjectSystem()
 void AActorInteractObjectInterface::SetConnectionWithInteractObject()
 {
 }
+
+TArray<AActorInteractObjectInterface*> AActorInteractObjectInterface::GetInteractObjectsInCurrentSystem()
+{
+	TArray<AActorInteractObjectInterface*> Default;
+	return Default;
+}
+
 
 void AActorInteractObjectInterface::SetAsPlayerBlockingEquippedInteractObject()
 {

@@ -579,11 +579,11 @@ void AGameEvent::CollectableBehavior()
 				BehaviorStatusChange("InStorageCollectableItem");
 			}
 		}
-		if(MotherIOInterface->Option2JustPressed)
+		else if(MotherIOInterface->Option2JustPressed)
 		{
 			UE_LOG(LogTemp,Warning,TEXT("Combine"))
 		}
-		if(MotherIOInterface->Option3JustPressed)//拿起
+		else if(MotherIOInterface->Option3JustPressed)//拿起
 		{
 			if(GetMotherIOInterfaceStatus() == Connected)
 			{
@@ -604,16 +604,13 @@ void AGameEvent::CollectableBehavior()
 			BehaviorStatusChange("CollectableItem");
 			MotherIOInterfaceChangeStatus(Default);
 		}
-		if(MotherIOInterface->Option2JustPressed)
+		else if(MotherIOInterface->Option2JustPressed)
 		{
 			UE_LOG(LogTemp,Warning,TEXT("Combine"))
 		}
-		if(MotherIOInterface->Option3JustPressed)//拿起
+		else if(MotherIOInterface->Option3JustPressed)//拿起
 		{
-			if(GetMotherIOInterfaceStatus() == Connected)
-			{
-				MotherIOInterface->SeperateFromPlayerPossessedInteractObjectSystem();
-			}
+			MotherIOInterface->SeperateFromPlayerPossessedInteractObjectSystem();
 			MotherIOInterface->ClearPlayerBlockingEquippedInteractObject();
 			MotherIOInterface->SetAsPlayerBlockingEquippedInteractObject();
 			MotherIOInterfaceChangeStatus(Equipped);
@@ -627,18 +624,29 @@ void AGameEvent::CollectableBehavior()
 			UE_LOG(LogTemp,Warning,TEXT("UseEquipped"))
 			MotherIOInterface->UseEquipment();
 		}
-		if(MotherIOInterface->Option2JustPressed)
+		else if(MotherIOInterface->Option2JustPressed)//与目标组合
 		{
 			UE_LOG(LogTemp,Warning,TEXT("Combine"))
+			MotherIOInterface ->ClearPlayerBlockingEquippedInteractObject();
+			if( MotherIOInterface ->MergeWithTargetInteractObjectSystem())
+			{
+				MotherIOInterfaceChangeStatus(Connected);
+				BehaviorStatusChange("InStorageCollectableItem");   
+			}
+			else
+			{
+				MotherIOInterfaceChangeStatus(Default);
+				BehaviorStatusChange("CollectableItem");  
+			}
 		}
-		if(MotherIOInterface->Option3JustPressed)//放下
+		else if(MotherIOInterface->Option3JustPressed)//放下
 		{
 			UE_LOG(LogTemp,Warning,TEXT("UnloadEquipped"))
 			MotherIOInterface ->ClearPlayerBlockingEquippedInteractObject();
 			MotherIOInterfaceChangeStatus(Default);
 			BehaviorStatusChange("CollectableItem");
 		}
-		if(MotherIOInterface->Option4JustPressed)//放入背包
+		else if(MotherIOInterface->Option4JustPressed)//放入背包
 		{
 			UE_LOG(LogTemp,Warning,TEXT("BackToBackStorage"))
 			MotherIOInterface ->ClearPlayerBlockingEquippedInteractObject();
@@ -655,6 +663,7 @@ void AGameEvent::CollectableBehavior()
 			}
 	 
 		}
+		
 		if(MotherIOInterface->CustomInput1)//被其他装备挤占
 		{
 			if(MotherIOInterface ->MergeWithPlayerPossessedInteractObjectSystem())

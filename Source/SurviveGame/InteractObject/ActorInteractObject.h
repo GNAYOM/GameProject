@@ -67,12 +67,14 @@ public:
 	//Set InteractObjectSystem
 	virtual void SetPlayerPossessedInteractObjectSystem() override;
 	virtual bool MergeWithPlayerPossessedInteractObjectSystem() override;
-	virtual bool MergeWithTargetInteractObject() override;
+	virtual bool MergeWithTargetInteractObjectSystem() override;
 	virtual void MergeWithSourceInteractObject() override;
 	virtual void SeperateFromPlayerPossessedInteractObjectSystem() override;
-	virtual bool SeperateWithTargetInteractObject() override;
+	virtual bool SeperateFromTargetInteractObjectSystem() override;
 	virtual void SeperateFromSourceInteractObject() override;
 	virtual void SetNewInteractObjectSystem() override;
+	//Get InteractObjectSysmtem
+	virtual TArray<AActorInteractObjectInterface*> GetInteractObjectsInCurrentSystem();
 	//PlayerEquip
 	virtual void SetAsPlayerBlockingEquippedInteractObject() override;
 	virtual void ClearPlayerBlockingEquippedInteractObject() override;
@@ -81,7 +83,7 @@ public:
 	//Socket
 	virtual void InitSocketPanel() override;
 	TargetSocketInfo FindTargetSocket(SocketPanel* TargetSocketPanel);
-	void SetSocketsOccupied(int RowIndex,int ColIndex);
+	void SetSocketsOccupied(AActorInteractObjectInterface* TargetInteractObject,int RowIndex,int ColIndex);
 	void DisconnectFromSocket(int RowIndex,int ColIndex);
 	//Test
 	virtual void LogHello() override;

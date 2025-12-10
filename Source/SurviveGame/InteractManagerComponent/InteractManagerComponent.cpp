@@ -67,7 +67,10 @@ void UInteractManagerComponent::InteractObjectSelection()
 
 AActorInteractObjectInterface* UInteractManagerComponent::SelectInteractObjectByRange()
 {
+	
 	tmp_InteractObjectsSorted = InRangeInteractObjects;
+	if(tmp_InteractObjectsSorted.Contains(EquippedInteractObject))
+		tmp_InteractObjectsSorted.Remove(EquippedInteractObject);//排序不包括正在被装备的
 	float tmp_CurrentDistanceA = 0.f;
 	float tmp_CurrentDistanceB = 0.f;
 	AActorInteractObjectInterface* tmp_PosSwap = NULL;

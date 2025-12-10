@@ -97,12 +97,14 @@ protected:
 	UInputAction* EquipWearEquipment;
 	UPROPERTY(EditAnywhere,Category="Action")
 	UInputAction* EquipConstructEquipment;
+	//MouseSelect
 	UPROPERTY(EditAnywhere,Category="Action")
-	UInputAction* SwitchEquipmentPrevious;
+	UInputAction* MouseSelectNext;
 	UPROPERTY(EditAnywhere,Category="Action")
-	UInputAction* SwitchEquipmentNext;
+	UInputAction* MouseSelectPrevious;
+	//Equipment
 	UPROPERTY(EditAnywhere,Category="Action")
-	UInputAction* AimEquipment;
+	UInputAction* ReadyEquipment;
 	UPROPERTY(EditAnywhere,Category="Action")
 	UInputAction* UseEquipment;
 	UPROPERTY(EditAnywhere,Category="Action")
